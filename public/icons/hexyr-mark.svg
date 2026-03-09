@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+    <defs>
+      <linearGradient id="accent" x1="100" y1="90" x2="405" y2="420" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#7AE3FF"/>
+        <stop offset="0.48" stop-color="#53D4FF"/>
+        <stop offset="1" stop-color="#7C7BFF"/>
+      </linearGradient>
+      <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="6" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    
+    <polygon points="364.63,193.28 364.63,318.72 256.00,381.44 147.37,318.72 147.37,193.28 256.00,130.56" fill="#151A21" opacity="0.72"/>
+    <polygon points="415.63,163.84 415.63,348.16 256.00,440.32 96.37,348.16 96.37,163.84 256.00,71.68" stroke="url(#accent)" stroke-width="24" stroke-linejoin="round" filter="url(#softGlow)"/>
+    <polygon points="382.37,183.04 382.37,328.96 256.00,401.92 129.63,328.96 129.63,183.04 256.00,110.08" stroke="#223042" stroke-width="10" stroke-linejoin="round" opacity="0.95"/>
+
+    <path d="M164 150V362" stroke="#F5F7FB" stroke-width="28" stroke-linecap="round"/>
+    <path d="M348 150V362" stroke="#F5F7FB" stroke-width="28" stroke-linecap="round"/>
+    <path d="M164 256H348" stroke="#F5F7FB" stroke-width="28" stroke-linecap="round"/>
+
+    <path d="M122 203H164" stroke="url(#accent)" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="122" cy="203" r="9" fill="#53D4FF"/>
+
+    <path d="M348 309H390" stroke="url(#accent)" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="390" cy="309" r="9" fill="#7C7BFF"/>
+
+    <path d="M208 150V362" stroke="#A6B0BF" stroke-width="3" opacity="0.22"/>
+    <path d="M304 150V362" stroke="#A6B0BF" stroke-width="3" opacity="0.22"/>
+    </svg>

@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hexyr-com",
+  "account_id": "b3ec3de482ff90c40bd94d0b4c51968f",
+  "main": "src/worker/index.ts",
+  "workers_dev": true,
+  "preview_urls": true,
+  "compatibility_date": "2026-03-09",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [
+    "hexyr.com/*"
+  ],
+  "vars": {
+    "APP_NAME": "Hexyr",
+    "APP_DOMAIN": "https://hexyr.com"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
