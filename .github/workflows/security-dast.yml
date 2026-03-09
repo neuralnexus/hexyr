@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: ZAP baseline scan
         id: zap
-        uses: zaproxy/action-baseline@v0.14.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: ${{ inputs.target_url || 'https://hexyr.com' }}
