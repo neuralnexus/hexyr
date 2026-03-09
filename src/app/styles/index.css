@@ -6,13 +6,26 @@
   color-scheme: dark;
 }
 
+:root.light {
+  color-scheme: light;
+}
+
 body {
   @apply bg-surface-950 text-slate-100 font-sans antialiased;
   margin: 0;
   min-height: 100vh;
+  transition: background-color 180ms ease, color 180ms ease;
   background-image:
     radial-gradient(1200px circle at 10% -20%, rgba(52, 214, 255, 0.11), transparent 60%),
     radial-gradient(850px circle at 90% 10%, rgba(122, 125, 255, 0.08), transparent 55%);
+}
+
+:root.light body {
+  background-color: #eef3fb;
+  color: #0f172a;
+  background-image:
+    radial-gradient(1000px circle at 5% -15%, rgba(37, 99, 235, 0.1), transparent 55%),
+    radial-gradient(850px circle at 95% 5%, rgba(6, 182, 212, 0.12), transparent 50%);
 }
 
 * {
@@ -34,4 +47,49 @@ body {
 
 .glass {
   @apply border border-white/10 bg-surface-900/80 backdrop-blur;
+}
+
+.brand-chip {
+  background: linear-gradient(135deg, rgba(52, 214, 255, 0.16), rgba(122, 125, 255, 0.1));
+}
+
+:root.light .glass {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+:root.light .brand-chip {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(6, 182, 212, 0.14));
+}
+
+:root.light .text-slate-100 {
+  color: #0f172a;
+}
+
+:root.light .text-slate-200,
+:root.light .text-slate-300 {
+  color: #1e293b;
+}
+
+:root.light .text-slate-400,
+:root.light .text-slate-500 {
+  color: #475569;
+}
+
+:root.light .text-cyan-100,
+:root.light .text-cyan-200,
+:root.light .text-cyan-300 {
+  color: #0f4f7a;
+}
+
+:root.light .bg-surface-800,
+:root.light .bg-surface-800\/50,
+:root.light .bg-surface-900,
+:root.light .bg-surface-900\/40,
+:root.light .bg-surface-900\/60 {
+  background-color: rgba(241, 245, 249, 0.95);
+}
+
+:root.light .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.14);
 }

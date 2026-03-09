@@ -4,24 +4,31 @@ import { Brand } from './Brand';
 interface TopBarProps {
   dark: boolean;
   onToggleTheme: () => void;
+  onOpenPalette: () => void;
 }
 
-export function TopBar({ dark, onToggleTheme }: TopBarProps) {
+export function TopBar({ dark, onToggleTheme, onOpenPalette }: TopBarProps) {
   return (
     <header className="glass flex items-center justify-between px-4">
       <Brand />
       <button
         type="button"
         className="focus-ring hidden w-[38%] max-w-xl items-center gap-2 rounded-md border border-white/10 bg-surface-800 px-3 py-2 text-xs text-slate-300 md:flex"
+        onClick={onOpenPalette}
       >
         <Search size={14} />
         <span>Command palette</span>
         <span className="ml-auto rounded bg-black/30 px-1.5 py-0.5 font-mono text-[10px]">Ctrl+K</span>
       </button>
       <div className="flex items-center gap-2">
-        <button className="focus-ring rounded-md border border-white/10 bg-surface-800 p-2" type="button">
+        <a
+          className="focus-ring rounded-md border border-white/10 bg-surface-800 p-2"
+          href="https://docs.hexyr.com"
+          target="_blank"
+          rel="noreferrer"
+        >
           Docs
-        </button>
+        </a>
         <a
           className="focus-ring rounded-md border border-white/10 bg-surface-800 p-2"
           href="https://github.com/neuralnexus/hexyr"

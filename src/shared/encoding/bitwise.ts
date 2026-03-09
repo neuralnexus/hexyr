@@ -5,7 +5,10 @@ export type BitwiseOp = 'AND' | 'OR' | 'XOR';
 function parseInput(input: string): Uint8Array {
   const clean = input.trim();
   if (/^[01\s]+$/.test(clean)) {
-    return binaryToBytes(clean);
+    const compact = clean.replace(/\s+/g, '');
+    if (compact.length > 0 && compact.length % 8 === 0) {
+      return binaryToBytes(clean);
+    }
   }
   return hexToBytes(clean);
 }

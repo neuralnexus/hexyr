@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { CommandPalette } from './components/CommandPalette';
 import { TopBar } from './components/TopBar';
 import { WorkspaceProvider } from './hooks/useWorkspace';
 import { AppRoutes } from './routes/AppRoutes';
@@ -8,22 +9,54 @@ const THEME_KEY = 'hexyr:theme';
 
 export default function App() {
   const [dark, setDark] = useState(() => localStorage.getItem(THEME_KEY) !== 'light');
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('light', !dark);
     localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
   }, [dark]);
 
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setPaletteOpen(true);
+      }
+      if (event.key === 'Escape') {
+        setPaletteOpen(false);
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   return (
     <BrowserRouter>
       <WorkspaceProvider>
         <div className="app-shell">
-          <TopBar dark={dark} onToggleTheme={() => setDark((value) => !value)} />
+          <TopBar
+            dark={dark}
+            onToggleTheme={() => setDark((value) => !value)}
+            onOpenPalette={() => setPaletteOpen(true)}
+          />
           <AppRoutes />
           <footer className="glass flex items-center justify-between px-4 text-[11px] text-slate-400">
-            <span>Ctrl+K Command Palette (skeleton)</span>
-            <span>Local-first: payloads stay in your browser.</span>
+            <span>Ctrl+K Command Palette</span>
+            <span className="flex items-center gap-2">
+              <span>Local-first: payloads stay in your browser.</span>
+              <span className="text-slate-500">•</span>
+              <a
+                href="https://mattivan.com"
+                target="_blank"
+                rel="noreferrer"
+                className="focus-ring rounded px-1 text-cyan-300 hover:text-cyan-200"
+              >
+                Made by Matt Ivan
+              </a>
+            </span>
           </footer>
+          <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
         </div>
       </WorkspaceProvider>
     </BrowserRouter>

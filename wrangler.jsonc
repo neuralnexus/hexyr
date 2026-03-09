@@ -12,7 +12,8 @@
     "not_found_handling": "single-page-application"
   },
   "routes": [
-    "hexyr.com/*"
+    "hexyr.com/*",
+    "docs.hexyr.com/*"
   ],
   "vars": {
     "APP_NAME": "Hexyr",

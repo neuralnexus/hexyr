@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://hexyr.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://hexyr.com/inspect</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://hexyr.com/tool/hex</loc></url>
+  <url><loc>https://hexyr.com/tool/base64</loc></url>
+  <url><loc>https://hexyr.com/tool/binary</loc></url>
+  <url><loc>https://hexyr.com/tool/url</loc></url>
+  <url><loc>https://hexyr.com/tool/html</loc></url>
+  <url><loc>https://hexyr.com/tool/unicode</loc></url>
+  <url><loc>https://hexyr.com/tool/jwt</loc></url>
+  <url><loc>https://hexyr.com/tool/hash</loc></url>
+  <url><loc>https://hexyr.com/tool/bitwise</loc></url>
+  <url><loc>https://hexyr.com/tool/hexdump</loc></url>
+  <url><loc>https://docs.hexyr.com/</loc></url>
+</urlset>

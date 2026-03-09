@@ -59,10 +59,17 @@ Local execution keeps interactions faster, lowers edge complexity, and reduces r
 ## Cloudflare Notes
 
 - Deployment target: `hexyr.com`
+- Docs target: `docs.hexyr.com`
 - Runtime: Cloudflare Workers + static SPA assets
 - SPA fallback is configured for routes like `/tool/hex`
 - API namespace is explicit under `/api/*`
 - KV is intentionally not used
+
+## SEO and Crawlability
+
+- `robots.txt` is included in `public/robots.txt`
+- XML sitemap is included in `public/sitemap.xml`
+- Canonical, Open Graph, and Twitter metadata are configured in `index.html`
 
 ## Routes
 
@@ -109,7 +116,7 @@ pnpm exec wrangler login
 3. Deploy:
 
 ```bash
-pnpm deploy
+pnpm run deploy
 ```
 
 ## GitHub Actions
@@ -124,6 +131,10 @@ pnpm deploy
 - SAST findings are surfaced in GitHub Security alerts when Advanced Security/Code scanning is enabled.
 - DAST is non-destructive baseline crawling and report generation.
 - You can manually run DAST with a custom URL from the Actions tab (`target_url` input).
+
+## Contributing
+
+Community contributions are welcome. Please read `CONTRIBUTING.md` for branch/PR workflow, quality gates, and privacy/security expectations.
 
 Required GitHub secrets:
 

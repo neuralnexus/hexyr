@@ -1,4 +1,4 @@
-import { detectFormats } from '../detection';
+import { detectFormats, isLikelyBase64 } from '../detection';
 import { normalizeHexInput } from '../encoding';
 
 export function explainHexDump(input: string): string {
@@ -18,6 +18,15 @@ export function explainHexDump(input: string): string {
 }
 
 export function suggestDecodingStrategies(input: string): string {
+  const compactBinary = input.replace(/\s+/g, '');
+  if (/^[01]+$/.test(compactBinary) && compactBinary.length % 8 === 0 && compactBinary.length >= 8) {
+    return 'Likely binary bitstring. Group into bytes first, then render hex and UTF-8 views.';
+  }
+
+  if (isLikelyBase64(input)) {
+    return 'Likely base64 text. Try decoding to UTF-8 and then inspect for JSON or binary signatures.';
+  }
+
   const [top] = detectFormats(input);
   switch (top?.format) {
     case 'jwt':

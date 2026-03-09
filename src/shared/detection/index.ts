@@ -59,7 +59,11 @@ export function detectFormats(input: string): FormatCandidate[] {
   const candidates: FormatCandidate[] = [];
 
   const normalizedHex = normalizeHexInput(value);
-  if (isValidHex(value) || (normalizedHex.length >= 8 && /^[0-9a-fA-F]+$/.test(normalizedHex))) {
+  const compactInput = value.replace(/0x/gi, '').replace(/\s+/g, '');
+  if (
+    isValidHex(value) ||
+    (compactInput === normalizedHex && normalizedHex.length >= 8 && /^[0-9a-fA-F]+$/.test(normalizedHex))
+  ) {
     candidates.push({
       format: 'hex',
       confidence: normalizedHex.length % 2 === 0 ? 0.92 : 0.65,
