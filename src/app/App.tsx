@@ -42,8 +42,9 @@ export default function App() {
           />
           <AppRoutes />
           <footer className="glass grid grid-cols-1 gap-1 px-3 py-2 text-[11px] text-slate-400 md:grid-cols-3 md:items-center md:px-4">
-            <span className="hidden md:block">Ctrl+K Command Palette</span>
-            <span className="text-left md:text-center">
+            <span className="text-center md:hidden">
+              <span>Payloads stay local</span>
+              <span className="px-1 text-slate-500">|</span>
               <a
                 href="https://mattivan.com"
                 target="_blank"
@@ -53,7 +54,18 @@ export default function App() {
                 Made by Matt Ivan
               </a>
             </span>
-            <span className="flex items-center gap-2 md:justify-end">
+            <span className="hidden md:block">Ctrl+K Command Palette</span>
+            <span className="hidden text-left md:block md:text-center">
+              <a
+                href="https://mattivan.com"
+                target="_blank"
+                rel="noreferrer"
+                className="focus-ring rounded px-1 text-cyan-300 hover:text-cyan-200"
+              >
+                Made by Matt Ivan
+              </a>
+            </span>
+            <span className="hidden items-center gap-2 md:flex md:justify-end">
               <span>Local-first: payloads stay in your browser.</span>
               <span className="text-slate-500">•</span>
               <a
