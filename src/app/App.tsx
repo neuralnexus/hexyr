@@ -57,7 +57,7 @@ export default function App() {
               <span>Local-first: payloads stay in your browser.</span>
               <span className="text-slate-500">•</span>
               <a
-                href="https://mattivan.com"
+                href="https://donate.stripe.com/eVq5kD1mTgvq7kd0MBeZ200"
                 target="_blank"
                 rel="noreferrer"
                 className="focus-ring rounded px-1 text-cyan-300 hover:text-cyan-200"
