@@ -9,9 +9,6 @@ Desktop - HTTP Signer:
 
 ![Hexyr Desktop UI](docs/screenshots/desktop-inspector.png)
 
-Mobile - Universal Inspector:
-
-![Hexyr Mobile Universal Inspector](docs/screenshots/mobile-inspector.png)
 
 ## Core Features
 
