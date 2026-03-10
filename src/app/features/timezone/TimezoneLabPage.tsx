@@ -41,9 +41,25 @@ function parseOffsetHours(offset: string): number {
   return sign * (Number.parseInt(m[2], 10) + Number.parseInt(m[3], 10) / 60);
 }
 
-function shortZoneLabel(zone: string): string {
+function shortZoneLabel(zone: string, offset: string): string {
+  if (zone === 'UTC') return 'UTC';
+  if (zone === 'America/Los_Angeles') return offset === 'GMT-07:00' ? 'PDT' : 'PST';
+  if (zone === 'America/New_York') return offset === 'GMT-04:00' ? 'EDT' : 'EST';
+  if (zone === 'America/Chicago') return offset === 'GMT-05:00' ? 'CDT' : 'CST';
+  if (zone === 'Europe/London') return offset === 'GMT+01:00' ? 'BST' : 'GMT';
+  if (zone === 'Europe/Berlin') return offset === 'GMT+02:00' ? 'CEST' : 'CET';
+  if (zone === 'Europe/Kyiv') return offset === 'GMT+03:00' ? 'EEST' : 'EET';
+  if (zone === 'Asia/Dubai') return 'GST';
+  if (zone === 'Asia/Kolkata') return 'IST';
+  if (zone === 'Asia/Hong_Kong') return 'HKT';
+  if (zone === 'Asia/Seoul') return 'KST';
+  if (zone === 'Asia/Tokyo') return 'JST';
+  if (zone === 'Australia/Sydney') return offset === 'GMT+11:00' ? 'AEDT' : 'AEST';
+  if (zone === 'Pacific/Auckland') return offset === 'GMT+13:00' ? 'NZDT' : 'NZST';
+
   const tail = zone.split('/').at(-1) ?? zone;
-  return tail.replace(/_/g, '').slice(0, 4).toUpperCase();
+  const normalized = tail.replace(/[^A-Za-z]/g, '').toUpperCase();
+  return (normalized.slice(0, 4) || 'TZ').padEnd(3, 'X');
 }
 
 function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zone: string; offset: string }> }) {
@@ -65,13 +81,18 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
       zone: zone.zone,
       x: toX(lon),
       color: markerPalette[idx % markerPalette.length],
-      short: shortZoneLabel(zone.zone),
+      short: shortZoneLabel(zone.zone, zone.offset),
     };
   });
 
   const labelMarkers = markers
     .sort((a, b) => a.x - b.x)
-    .filter((marker, idx, arr) => idx === 0 || marker.x - arr[idx - 1].x >= 5);
+    .filter((marker, idx, arr) => idx === 0 || marker.x - arr[idx - 1].x >= 4)
+    .map((marker, idx) => ({
+      ...marker,
+      side: idx % 2 === 0 ? -1 : 1,
+      row: idx % 3,
+    }));
 
   return (
     <div className="glass rounded-md p-3">
@@ -100,10 +121,15 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
           {labelMarkers.map((marker) => (
             <div
               key={`${marker.zone}-label`}
-              className="absolute -translate-x-1/2 text-[9px] font-mono"
-              style={{ left: `${marker.x}%`, top: '1.15rem', color: marker.color }}
+              className="absolute text-[9px] font-mono"
+              style={{
+                left: `${marker.x}%`,
+                top: `${1.05 + marker.row * 0.55}rem`,
+                color: marker.color,
+                transform: marker.side === -1 ? 'translateX(calc(-100% - 4px))' : 'translateX(4px)',
+              }}
             >
-              {marker.short}
+              <span className="rounded bg-surface-950/70 px-1 py-[1px]">{marker.short}</span>
             </div>
           ))}
         </div>
