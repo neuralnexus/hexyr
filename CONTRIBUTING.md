@@ -1,6 +1,6 @@
 # Contributing to Hexyr
 
-Thanks for helping improve Hexyr.
+Thanks for checking out this page. Contributions are welcome. If you want to help improve Hexyr, you're in the right place. 
 
 ## Ground Rules
 
