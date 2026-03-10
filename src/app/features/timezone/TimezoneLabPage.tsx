@@ -62,10 +62,28 @@ function shortZoneLabel(zone: string, offset: string): string {
   return (normalized.slice(0, 4) || 'TZ').padEnd(3, 'X');
 }
 
-function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zone: string; offset: string }> }) {
-  const utc = new Date(epochMs);
+function SunCoverageMap({
+  epochMs,
+  tick,
+  range,
+  zones,
+}: {
+  epochMs: number;
+  tick: number;
+  range?: { startIso: string; endIso: string };
+  zones: Array<{ zone: string; offset: string }>;
+}) {
+  let effectiveEpochMs = epochMs + tick * 1000;
+  if (range) {
+    const startMs = Date.parse(range.startIso);
+    const endMs = Date.parse(range.endIso);
+    const spanMs = Math.max(1, endMs - startMs);
+    effectiveEpochMs = startMs + ((tick * 1000) % spanMs);
+  }
+
+  const utc = new Date(effectiveEpochMs);
   const utcHours = utc.getUTCHours() + utc.getUTCMinutes() / 60 + utc.getUTCSeconds() / 3600;
-  const sunLongitude = ((utcHours - 12) / 24) * 360;
+  const sunLongitude = ((12 - utcHours) / 24) * 360;
   const startLon = sunLongitude - 90;
   const endLon = sunLongitude + 90;
 
@@ -139,6 +157,9 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
         <div className="absolute right-2 bottom-1 text-[10px] text-slate-400">+180°</div>
       </div>
       <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude. Each line color matches its timezone chip.</p>
+      <p className="text-[10px] text-slate-500">
+        {range ? 'Map animates through the selected range window.' : 'Map updates every second.'}
+      </p>
       <div className="mt-1 flex flex-wrap gap-1.5">
         {markers.map((marker) => (
           <span key={marker.zone} className="inline-flex items-center gap-1 rounded border border-white/10 bg-surface-900/50 px-1.5 py-0.5 text-[10px] text-slate-300">
@@ -153,9 +174,9 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
 
 function DigitalClock({ zone, date, time }: { zone: string; date: string; time: string }) {
   return (
-    <div className="rounded border border-cyan-400/20 bg-surface-900/70 px-2 py-1 text-right font-mono shadow-[inset_0_0_20px_rgba(8,145,178,0.15)]">
-      <div className="text-[10px] uppercase tracking-[0.1em] text-cyan-300/90">{zone}</div>
-      <div className="text-sm leading-none text-cyan-200">{time}</div>
+    <div className="flex h-[5.25rem] w-[15.5rem] flex-col items-center justify-center rounded border border-cyan-400/20 bg-surface-900/70 px-3 py-1 font-mono text-center shadow-[inset_0_0_20px_rgba(8,145,178,0.15)] sm:w-[16.75rem]">
+      <div className="w-full truncate text-[10px] uppercase tracking-[0.1em] text-cyan-300/90">{zone}</div>
+      <div className="text-[2rem] leading-[1] text-cyan-200">{time}</div>
       <div className="text-[10px] text-slate-400">{date}</div>
     </div>
   );
@@ -196,7 +217,12 @@ export function TimezoneLabPage() {
         <div className="rounded border border-red-400/40 bg-red-500/10 p-2 text-sm text-red-300">{output.error}</div>
       ) : (
         <div className="space-y-3">
-          <SunCoverageMap epochMs={output.result.unixMilliseconds} zones={output.result.zones.map((z) => ({ zone: z.zone, offset: z.offset }))} />
+          <SunCoverageMap
+            epochMs={output.result.unixMilliseconds}
+            tick={tick}
+            range={output.result.range}
+            zones={output.result.zones.map((z) => ({ zone: z.zone, offset: z.offset }))}
+          />
           <div className="glass rounded-md p-3 text-xs text-slate-300">
             <p>ISO: {output.result.sourceIso}</p>
             <p>Unix seconds: {output.result.unixSeconds}</p>
