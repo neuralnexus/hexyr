@@ -1,8 +1,7 @@
 # Hexyr
 
 Hexyr is a local-first developer hex and encoding toolkit for quickly understanding unknown payloads.
-
-**Tagline:** A Swiss-Army knife for developers who constantly need to encode, decode, inspect, and understand data.
+It's designed to be a Swiss-Army knife for developers who constantly need to encode, decode, inspect, and understand data.
 
 ## Screenshots
 
