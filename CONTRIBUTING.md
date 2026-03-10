@@ -5,8 +5,8 @@ Thanks for helping improve Hexyr.
 ## Ground Rules
 
 - Keep the product local-first and privacy-first.
-- Do not add backend persistence in MVP.
-- Do not add Cloudflare KV for current architecture.
+- Do not add backend persistence. This is a security standard. 
+- Do not add Cloudflare KV for current architecture. What can I say? I'm cheap. 
 - Keep deterministic behavior for core transforms and analysis.
 
 ## Development Setup
@@ -44,6 +44,7 @@ pnpm build
 - Keep Worker routes minimal and edge-safe.
 - Avoid large dependencies that inflate startup/bundle cost.
 - Maintain accessibility and keyboard support in UI components.
+- Please ensure you have commit signing enabled. 
 
 ## Security Expectations
 
