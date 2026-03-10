@@ -5,11 +5,13 @@ It's designed to be a Swiss-Army knife for developers who constantly need to enc
 
 ## Screenshots
 
-HTTP Signer tool view:
+Desktop - HTTP Signer:
 
-![Hexyr HTTP Signer UI](docs/screenshots/http-signer.svg)
+![Hexyr Desktop UI](docs/screenshots/desktop-inspector.png)
 
-Replace `docs/screenshots/http-signer.svg` with your latest app screenshot when updating visuals.
+Mobile - Universal Inspector:
+
+![Hexyr Mobile Universal Inspector](docs/screenshots/mobile-inspector.png)
 
 ## Core Features
 

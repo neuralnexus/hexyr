@@ -41,9 +41,9 @@ export default function App() {
             onOpenPalette={() => setPaletteOpen(true)}
           />
           <AppRoutes />
-          <footer className="glass grid grid-cols-3 items-center px-4 text-[11px] text-slate-400">
-            <span>Ctrl+K Command Palette</span>
-            <span className="text-center">
+          <footer className="glass grid grid-cols-1 gap-1 px-3 py-2 text-[11px] text-slate-400 md:grid-cols-3 md:items-center md:px-4">
+            <span className="hidden md:block">Ctrl+K Command Palette</span>
+            <span className="text-left md:text-center">
               <a
                 href="https://mattivan.com"
                 target="_blank"
@@ -53,7 +53,7 @@ export default function App() {
                 Made by Matt Ivan
               </a>
             </span>
-            <span className="flex items-center justify-end gap-2">
+            <span className="flex items-center gap-2 md:justify-end">
               <span>Local-first: payloads stay in your browser.</span>
               <span className="text-slate-500">•</span>
               <a
