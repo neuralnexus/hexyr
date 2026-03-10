@@ -10,15 +10,28 @@
   color-scheme: light;
 }
 
+html {
+  height: -webkit-fill-available;
+}
+
 body {
   @apply bg-surface-950 text-slate-100 font-sans antialiased;
   margin: 0;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   transition: background-color 180ms ease, color 180ms ease;
   background-image:
     radial-gradient(1200px circle at 10% -20%, rgba(52, 214, 255, 0.11), transparent 60%),
     radial-gradient(850px circle at 90% 10%, rgba(122, 125, 255, 0.08), transparent 55%);
+}
+
+@supports (-webkit-touch-callout: none) {
+  body,
+  #root,
+  .app-shell {
+    min-height: -webkit-fill-available;
+  }
 }
 
 :root.light body {
@@ -35,11 +48,20 @@ body {
 
 #root {
   height: 100vh;
+  height: 100dvh;
 }
 
 .app-shell {
-  @apply grid h-screen min-h-screen overflow-hidden;
+  @apply grid overflow-hidden;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   grid-template-rows: 56px 1fr auto;
+}
+
+.app-shell > footer {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
 }
 
 .focus-ring {
