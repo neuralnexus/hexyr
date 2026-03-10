@@ -211,6 +211,28 @@ export const DOCS_PAGE_HTML = `<!doctype html>
               <li><code>POST /api/tools/dns</code>, <code>/webhook-verify</code>, <code>/har-inspect</code></li>
               <li><code>POST /api/tools/cookie-analyze</code>, <code>/id-inspect</code>, <code>/policy-lint</code>, <code>/format</code></li>
             </ul>
+            <p>
+              Conversion-specific docs:
+            </p>
+            <ul>
+              <li><code>/api/tools/time-convert</code> accepts Unix, ISO8601, or wall-time input plus timezone lists.</li>
+              <li>Timezone aliases are supported for common labels like <code>IST</code>, <code>CET</code>, <code>Ukraine</code>, and <code>New Zealand</code>.</li>
+              <li><code>/api/tools/format</code> supports <code>mode: format|minify|validate</code> and structured conversion via <code>from</code>/<code>to</code>.</li>
+              <li>Structured conversion currently supports <code>json</code>, <code>yaml</code>, and <code>toml</code>.</li>
+            </ul>
+            <p><code>POST /api/tools/time-convert</code> example body:</p>
+            <pre><code>{
+  "input": "2026-03-10T10:30:00",
+  "sourceZone": "IST",
+  "zones": ["UTC", "CET", "Ukraine", "New Zealand"]
+}</code></pre>
+            <p><code>POST /api/tools/format</code> conversion example body:</p>
+            <pre><code>{
+  "input": "a = 1",
+  "from": "toml",
+  "to": "json",
+  "mode": "format"
+}</code></pre>
           </section>
 
           <section id="deployment" class="section">

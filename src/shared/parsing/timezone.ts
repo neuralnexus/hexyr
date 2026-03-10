@@ -16,7 +16,43 @@ export interface TimezoneLabResult {
   zones: TimezoneConversion[];
 }
 
-const DEFAULT_ZONES = ['UTC', 'America/Los_Angeles', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
+const DEFAULT_ZONES = [
+  'UTC',
+  'America/Los_Angeles',
+  'America/New_York',
+  'Europe/London',
+  'Asia/Tokyo',
+  'IST',
+  'Ukraine',
+  'New Zealand',
+  'CET',
+];
+
+const TIMEZONE_ALIASES: Record<string, string> = {
+  IST: 'Asia/Kolkata',
+  INDIA: 'Asia/Kolkata',
+  CET: 'Europe/Berlin',
+  UKRAINE: 'Europe/Kyiv',
+  KYIV: 'Europe/Kyiv',
+  'NEW ZEALAND': 'Pacific/Auckland',
+  NZ: 'Pacific/Auckland',
+  NZST: 'Pacific/Auckland',
+};
+
+function resolveTimezone(zone: string): string {
+  const trimmed = zone.trim();
+  if (!trimmed) throw new Error('Timezone value cannot be empty');
+  const upper = trimmed.toUpperCase();
+  return TIMEZONE_ALIASES[upper] ?? trimmed;
+}
+
+function assertValidTimezone(zone: string): void {
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: zone }).format(new Date());
+  } catch {
+    throw new Error(`Unsupported timezone: ${zone}`);
+  }
+}
 
 function parseOffsetMinutes(zoneName: string): number {
   const m = zoneName.match(/GMT([+-])(\d{1,2})(?::?(\d{2}))?/);
@@ -74,7 +110,9 @@ function parseInputToEpoch(input: string, sourceZone?: string): number {
   }
 
   if (!/[zZ]|[+-]\d{2}:?\d{2}$/.test(trimmed) && sourceZone) {
-    return zonedWallTimeToEpochMs(trimmed, sourceZone);
+    const resolvedSource = resolveTimezone(sourceZone);
+    assertValidTimezone(resolvedSource);
+    return zonedWallTimeToEpochMs(trimmed, resolvedSource);
   }
 
   const parsed = Date.parse(trimmed);
@@ -82,7 +120,7 @@ function parseInputToEpoch(input: string, sourceZone?: string): number {
   return parsed;
 }
 
-function formatZone(epochMs: number, zone: string): TimezoneConversion {
+function formatZone(epochMs: number, zone: string, label?: string): TimezoneConversion {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: zone,
     year: 'numeric',
@@ -99,7 +137,7 @@ function formatZone(epochMs: number, zone: string): TimezoneConversion {
   const map: Record<string, string> = {};
   for (const p of parts) map[p.type] = p.value;
   return {
-    zone,
+    zone: label ?? zone,
     iso: new Date(epochMs).toISOString(),
     date: `${map.year}-${map.month}-${map.day}`,
     time: `${map.hour}:${map.minute}:${map.second}`,
@@ -111,13 +149,18 @@ function formatZone(epochMs: number, zone: string): TimezoneConversion {
 export function convertTimestamp(input: string, zones = DEFAULT_ZONES, sourceZone?: string): TimezoneLabResult {
   const epochMs = parseInputToEpoch(input, sourceZone);
   const date = new Date(epochMs);
+  const resolvedZones = zones.map((zone) => {
+    const resolved = resolveTimezone(zone);
+    assertValidTimezone(resolved);
+    return { label: zone, resolved };
+  });
   return {
     sourceIso: date.toISOString(),
     unixSeconds: Math.floor(epochMs / 1000),
     unixMilliseconds: epochMs,
     rfc2822: date.toUTCString(),
     rfc3339: date.toISOString(),
-    zones: zones.map((zone) => formatZone(epochMs, zone)),
+    zones: resolvedZones.map((zone) => formatZone(epochMs, zone.resolved, zone.label)),
   };
 }
 
