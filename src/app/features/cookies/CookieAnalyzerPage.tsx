@@ -46,7 +46,7 @@ export function CookieAnalyzerPage() {
       </div>
       <pre
         aria-hidden="true"
-        className={`pointer-events-none fixed bottom-[4.75rem] left-1/2 z-10 -translate-x-1/2 scale-[0.58] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(56,189,248,0.32)] transition-opacity duration-[3000ms] motion-reduce:transition-none sm:bottom-[5.15rem] sm:scale-[0.68] md:bottom-[5.5rem] md:scale-[0.8] ${showMonster ? 'opacity-100' : 'opacity-0'}`}
+        className={`pointer-events-none fixed bottom-[4.1rem] left-1/2 z-10 -translate-x-1/2 scale-[0.58] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(56,189,248,0.32)] transition-opacity duration-[3000ms] motion-reduce:transition-none sm:bottom-[4.45rem] sm:scale-[0.68] md:bottom-[4.8rem] md:scale-[0.8] ${showMonster ? 'opacity-100' : 'opacity-0'}`}
       >
         {COOKIE_MONSTER_ASCII}
       </pre>
