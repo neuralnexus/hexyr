@@ -35,3 +35,8 @@ export * from './jwt';
 export * from './cert';
 export * from './query';
 export * from './pcap';
+export * from './tls';
+export * from './asn1';
+export * from './http-replay';
+export * from './regex-extract';
+export * from './schema';

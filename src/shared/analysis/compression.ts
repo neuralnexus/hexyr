@@ -1,0 +1,96 @@
+import { base64ToBytes, bytesToBase64, bytesToText, textToBytes } from '../encoding';
+
+export type CompressionFormat = 'gzip' | 'deflate' | 'brotli';
+export type RuntimeCompressionFormat = 'gzip' | 'deflate';
+
+async function runStream(
+  input: Uint8Array,
+  stream: CompressionStream | DecompressionStream,
+): Promise<Uint8Array> {
+  const writer = stream.writable.getWriter();
+  await writer.write(input);
+  await writer.close();
+  const response = new Response(stream.readable);
+  const arr = await response.arrayBuffer();
+  return new Uint8Array(arr);
+}
+
+function resolveFormat(format: CompressionFormat): 'gzip' | 'deflate' | 'deflate-raw' {
+  if (format === 'brotli') {
+    return 'deflate';
+  }
+  return format;
+}
+
+function assertCompressionSupport(): void {
+  if (typeof CompressionStream === 'undefined' || typeof DecompressionStream === 'undefined') {
+    throw new Error('Compression APIs are not available in this browser/runtime.');
+  }
+}
+
+export function getSupportedCompressionFormats(): RuntimeCompressionFormat[] {
+  const supported: RuntimeCompressionFormat[] = [];
+  if (typeof CompressionStream === 'undefined' || typeof DecompressionStream === 'undefined') {
+    return supported;
+  }
+  (['gzip', 'deflate'] as const).forEach((format) => {
+    try {
+      void new CompressionStream(format);
+      void new DecompressionStream(format);
+      supported.push(format);
+    } catch {
+      // unsupported format
+    }
+  });
+  return supported;
+}
+
+export async function compressText(input: string, format: CompressionFormat): Promise<string> {
+  assertCompressionSupport();
+  if (format === 'brotli') {
+    throw new Error('Brotli compression is not supported in this MVP runtime path.');
+  }
+  const stream = new CompressionStream(resolveFormat(format));
+  const result = await runStream(textToBytes(input), stream);
+  return bytesToBase64(result);
+}
+
+export async function decompressBase64(input: string, format: CompressionFormat): Promise<string> {
+  assertCompressionSupport();
+  if (format === 'brotli') {
+    throw new Error('Brotli decompression is not supported in this MVP runtime path.');
+  }
+  const stream = new DecompressionStream(resolveFormat(format));
+  const bytes = base64ToBytes(input);
+  const result = await runStream(bytes, stream);
+  return bytesToText(result);
+}
+
+export async function decompressBase64Auto(input: string): Promise<{ format: RuntimeCompressionFormat; text: string }> {
+  const bytes = base64ToBytes(input);
+  const detected = detectCompression(bytes);
+  const order: RuntimeCompressionFormat[] =
+    detected === 'gzip' ? ['gzip', 'deflate'] : detected === 'deflate' ? ['deflate', 'gzip'] : ['gzip', 'deflate'];
+
+  let lastError: Error | null = null;
+  for (const fmt of order) {
+    try {
+      const text = await decompressBase64(input, fmt);
+      return { format: fmt, text };
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error('Unknown decompression error');
+    }
+  }
+
+  throw lastError ?? new Error('Unable to decompress payload as gzip or deflate');
+}
+
+export function detectCompression(bytes: Uint8Array): CompressionFormat | 'unknown' {
+  if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
+    return 'gzip';
+  }
+  if (bytes.length >= 2 && bytes[0] === 0x78) {
+    return 'deflate';
+  }
+  return 'unknown';
+}
