@@ -33,14 +33,22 @@ export function CompressionPage() {
         const next = await compressText(input, selected);
         setOutput(next);
         setLastUsed(`Compressed with ${selected}`);
-      } else if (format === 'brotli') {
-        const auto = await decompressBase64Auto(input);
-        setOutput(auto.text);
-        setLastUsed(`Auto-decompressed using ${auto.format}`);
       } else {
-        const next = await decompressBase64(input, format);
-        setOutput(next);
-        setLastUsed(`Decompressed with ${format}`);
+        if (format === 'brotli') {
+          const auto = await decompressBase64Auto(input);
+          setOutput(auto.text);
+          setLastUsed(`Auto-decompressed using ${auto.format}`);
+        } else {
+          try {
+            const next = await decompressBase64(input, format);
+            setOutput(next);
+            setLastUsed(`Decompressed with ${format}`);
+          } catch {
+            const auto = await decompressBase64Auto(input);
+            setOutput(auto.text);
+            setLastUsed(`Auto-decompressed using ${auto.format}`);
+          }
+        }
       }
       setError('');
     } catch (err) {
@@ -100,6 +108,7 @@ export function CompressionPage() {
       <textarea className="focus-ring h-36 w-full resize-none rounded border border-white/10 bg-surface-900/60 p-3 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} />
       <p className="text-xs text-slate-400">Detected input format from base64 bytes: {detected}</p>
       {mode === 'compress' && <p className="text-xs text-slate-500">Compression supports gzip/deflate. Auto mode is only for decompression detection.</p>}
+      {mode === 'decompress' && <p className="text-xs text-slate-500">Input expects base64 compressed payload. If selected format fails, Hexyr automatically tries gzip/deflate detection.</p>}
       {lastUsed && <p className="text-xs text-cyan-300">{lastUsed}</p>}
       {error && <div className="rounded border border-red-400/40 bg-red-500/10 p-2 text-sm text-red-300">{error}</div>}
       <pre className="glass max-h-52 overflow-auto rounded-md p-3 font-mono text-xs text-cyan-100">{output}</pre>

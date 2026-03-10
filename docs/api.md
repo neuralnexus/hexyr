@@ -52,6 +52,21 @@ curl -s https://hexyr.com/api/tools/dns \
   }'
 ```
 
+### `POST /api/tools/dns-tool`
+
+Run DNS Toolkit actions by tool name.
+
+```bash
+curl -s https://hexyr.com/api/tools/dns-tool \
+  -H 'content-type: application/json' \
+  -d '{
+    "tool": "MX Lookup",
+    "target": "example.com"
+  }'
+```
+
+For probe-limited tools (like Ping/Trace/TCP checks), the response includes an explanatory note plus a local shell command suggestion.
+
 ### `POST /api/tools/webhook-verify`
 
 ```bash

@@ -80,7 +80,7 @@ export function DnsToolkitPage() {
   return (
     <section className="animate-rise space-y-3">
       <h1 className="text-lg font-semibold text-slate-100">DNS Zone Formatter + DNS Intelligence</h1>
-      <p className="text-sm text-slate-400">Use the top section for zone file parsing/formatting. Use the lookup section for MXToolbox-style checks (DNS/RDAP/health lookups).</p>
+      <p className="text-sm text-slate-400">Use the top section for zone file parsing/formatting. Use the lookup section for DNS/RDAP/health checks.</p>
 
       <section className="glass space-y-3 rounded-md p-3">
         <h2 className="text-xs uppercase tracking-[0.1em] text-slate-400">DNS Lookup Toolkit</h2>

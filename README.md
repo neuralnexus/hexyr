@@ -30,6 +30,7 @@ Desktop - HTTP Signer:
 - Timezone/ISO8601 lab (cross-timezone normalization)
 - Policy linter pack (CSP/CORS/security headers)
 - Formatter lab (JSON/YAML/TOML/XML/INI/SQL/HTTP + converter)
+- ASCII art generator (text fonts + image-to-ASCII, local processing)
 
 ## Universal Inspector
 
@@ -98,6 +99,7 @@ Local execution keeps interactions faster, lowers edge complexity, and reduces r
 - `/tool/timezone`
 - `/tool/policy`
 - `/tool/format`
+- `/tool/ascii`
 - `/api/health`
 - `/api/meta`
 - `/api/tools`
@@ -139,6 +141,9 @@ OpenAPI spec: `/openapi.json` (local: `http://localhost:5173/openapi.json`, prod
 - `POST /api/tools/format`
   - body: `{ "input": "...", "kind": "json|yaml|toml|xml|ini|sql|http", "mode": "format|minify|validate", "from": "json|yaml|toml", "to": "json|yaml|toml" }`
   - formats/minifies/validates many payload types, and converts JSON/YAML/TOML
+- `POST /api/tools/dns-tool`
+  - body: `{ "tool": "MX Lookup", "target": "example.com" }`
+  - runs DNS Toolkit checks (MX/A/AAAA/TXT/DMARC/SPF/RDAP/health and more)
 
 ## Local Development
 
