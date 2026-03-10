@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { parseSetCookieHeaders } from '../../../shared/parsing';
 
 const COOKIE_MONSTER_ASCII = `                                    
@@ -23,7 +23,13 @@ const COOKIE_MONSTER_ASCII = `
 
 export function CookieAnalyzerPage() {
   const [input, setInput] = useState('Set-Cookie: sid=abc123; Path=/; HttpOnly; Secure; SameSite=Lax');
+  const [showMonster, setShowMonster] = useState(false);
   const result = useMemo(() => parseSetCookieHeaders(input), [input]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowMonster(true), 120);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
     <section className="animate-rise relative space-y-3 overflow-hidden pb-32">
@@ -40,7 +46,7 @@ export function CookieAnalyzerPage() {
       </div>
       <pre
         aria-hidden="true"
-        className="pointer-events-none fixed bottom-12 left-1/2 z-10 -translate-x-1/2 translate-y-[18%] scale-[0.58] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(56,189,248,0.32)] sm:bottom-14 sm:scale-[0.68] md:bottom-16 md:scale-[0.8]"
+        className={`pointer-events-none fixed bottom-[4.75rem] left-1/2 z-10 -translate-x-1/2 scale-[0.58] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(56,189,248,0.32)] transition-opacity duration-[3000ms] motion-reduce:transition-none sm:bottom-[5.15rem] sm:scale-[0.68] md:bottom-[5.5rem] md:scale-[0.8] ${showMonster ? 'opacity-100' : 'opacity-0'}`}
       >
         {COOKIE_MONSTER_ASCII}
       </pre>
