@@ -1,6 +1,36 @@
 import { useMemo, useState } from 'react';
 import { convertTimestamp, getPopularTimezones } from '../../../shared/parsing';
 
+function parseClockAngles(time: string): { hour: number; minute: number; second: number } {
+  const [h, m, s] = time.split(':').map((value) => Number.parseInt(value, 10));
+  const hour = ((h % 12) + m / 60 + s / 3600) * 30;
+  const minute = (m + s / 60) * 6;
+  const second = s * 6;
+  return { hour, minute, second };
+}
+
+function ClockFace({ time }: { time: string }) {
+  const { hour, minute, second } = parseClockAngles(time);
+  return (
+    <div className="relative h-14 w-14 rounded-full border border-cyan-400/30 bg-surface-900/70 shadow-[0_0_20px_rgba(34,211,238,0.12)]">
+      <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-200" />
+      <span
+        className="absolute left-1/2 top-1/2 block h-4 w-0.5 origin-bottom rounded bg-slate-100"
+        style={{ transform: `translate(-50%, -100%) rotate(${hour}deg)`, animation: 'clock-hour 43200s linear infinite' }}
+      />
+      <span
+        className="absolute left-1/2 top-1/2 block h-5 w-0.5 origin-bottom rounded bg-cyan-300"
+        style={{ transform: `translate(-50%, -100%) rotate(${minute}deg)`, animation: 'clock-minute 3600s linear infinite' }}
+      />
+      <span
+        className="absolute left-1/2 top-1/2 block h-6 w-px origin-bottom bg-rose-300"
+        style={{ transform: `translate(-50%, -100%) rotate(${second}deg)`, animation: 'clock-second 60s linear infinite' }}
+      />
+      <span className="absolute inset-[3px] rounded-full border border-white/10" />
+    </div>
+  );
+}
+
 export function TimezoneLabPage() {
   const [input, setInput] = useState(new Date().toISOString());
   const [sourceZone, setSourceZone] = useState('UTC');
@@ -34,10 +64,13 @@ export function TimezoneLabPage() {
           </div>
           <div className="grid gap-2 lg:grid-cols-2">
             {output.result.zones.map((zone) => (
-              <div key={zone.zone} className="glass rounded-md p-3 text-xs text-slate-200">
-                <div className="font-semibold">{zone.zone}</div>
-                <div>{zone.weekday} {zone.date} {zone.time}</div>
-                <div className="text-slate-400">{zone.offset}</div>
+              <div key={zone.zone} className="glass flex items-center justify-between rounded-md p-3 text-xs text-slate-200">
+                <div>
+                  <div className="font-semibold">{zone.zone}</div>
+                  <div>{zone.weekday} {zone.date} {zone.time}</div>
+                  <div className="text-slate-400">{zone.offset}</div>
+                </div>
+                <ClockFace time={zone.time} />
               </div>
             ))}
           </div>

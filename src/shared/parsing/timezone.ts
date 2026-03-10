@@ -20,35 +20,65 @@ const DEFAULT_ZONES = [
   'UTC',
   'America/Los_Angeles',
   'America/New_York',
-  'Europe/London',
-  'Asia/Tokyo',
-  'Asia/Kolkata',
-  'Europe/Kyiv',
-  'Pacific/Auckland',
-  'Europe/Berlin',
-  'Asia/Dubai',
-  'Australia/Sydney',
-  'Asia/Hong_Kong',
   'America/Chicago',
+  'Europe/London',
+  'Europe/Berlin',
+  'Europe/Kyiv',
+  'Asia/Dubai',
+  'Asia/Kolkata',
+  'Asia/Hong_Kong',
   'Asia/Seoul',
+  'Asia/Tokyo',
+  'Australia/Sydney',
+  'Pacific/Auckland',
 ];
 
 const TIMEZONE_ALIASES: Record<string, string> = {
+  UTC: 'UTC',
+  GMT: 'UTC',
+
   IST: 'Asia/Kolkata',
   INDIA: 'Asia/Kolkata',
+
+  PST: 'America/Los_Angeles',
+  PT: 'America/Los_Angeles',
+  PACIFIC: 'America/Los_Angeles',
+  LA: 'America/Los_Angeles',
+
+  EST: 'America/New_York',
+  ET: 'America/New_York',
+  EASTERN: 'America/New_York',
+  NYC: 'America/New_York',
+
+  LON: 'Europe/London',
+  UK: 'Europe/London',
+
   CET: 'Europe/Berlin',
+
   UKRAINE: 'Europe/Kyiv',
   KYIV: 'Europe/Kyiv',
+
   'NEW ZEALAND': 'Pacific/Auckland',
   NZ: 'Pacific/Auckland',
   NZST: 'Pacific/Auckland',
+
   SYDNEY: 'Australia/Sydney',
+  AEST: 'Australia/Sydney',
+
   'HONG KONG': 'Asia/Hong_Kong',
   HONGKONG: 'Asia/Hong_Kong',
+  HK: 'Asia/Hong_Kong',
   HKT: 'Asia/Hong_Kong',
+
+  DUBAI: 'Asia/Dubai',
+  UAE: 'Asia/Dubai',
+  GST: 'Asia/Dubai',
+
   'US CENTRAL': 'America/Chicago',
   CST: 'America/Chicago',
+
   SEOUL: 'Asia/Seoul',
+  KOREA: 'Asia/Seoul',
   KST: 'Asia/Seoul',
 };
 

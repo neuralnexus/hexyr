@@ -18,6 +18,21 @@ describe('timezone lab', () => {
     ]);
   });
 
+  it('maps short aliases to canonical IANA zones', () => {
+    const result = convertTimestamp('1704067200', ['PST', 'EST', 'LON', 'CST']);
+    expect(result.zones.map((z) => z.zone)).toEqual([
+      'America/Los_Angeles',
+      'America/New_York',
+      'Europe/London',
+      'America/Chicago',
+    ]);
+  });
+
+  it('supports additional common aliases', () => {
+    const result = convertTimestamp('1704067200', ['UTC', 'HK', 'UAE', 'KOREA']);
+    expect(result.zones.map((z) => z.zone)).toEqual(['UTC', 'Asia/Hong_Kong', 'Asia/Dubai', 'Asia/Seoul']);
+  });
+
   it('includes requested presets in popular timezone defaults', () => {
     const zones = getPopularTimezones();
     expect(zones).toContain('Asia/Kolkata');

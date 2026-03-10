@@ -111,4 +111,17 @@ describe('worker routes', () => {
     expect(third.status).toBe(429);
     expect(third.headers.get('retry-after')).toBeTruthy();
   });
+
+  it('validates dns tool input before execution', async () => {
+    const res = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/dns-tool', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ tool: 'MX Lookup' }),
+      }),
+      env as never,
+      {} as never,
+    );
+    expect(res.status).toBe(400);
+  });
 });

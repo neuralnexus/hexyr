@@ -17,7 +17,7 @@ export const TOOL_DEFS: ToolDef[] = [
   { key: 'asn1', label: 'ASN.1 / DER', route: '/tool/asn1', group: 'Inspect' },
   { key: 'regex', label: 'Regex Extractor', route: '/tool/regex', group: 'Inspect' },
   { key: 'schema', label: 'Schema Validators', route: '/tool/schema', group: 'Inspect' },
-  { key: 'dns', label: 'DNS Toolkit', route: '/tool/dns', group: 'Inspect' },
+  { key: 'dns', label: 'DNS Zone Formatter', route: '/tool/dns', group: 'Inspect' },
   { key: 'har', label: 'HAR Inspector', route: '/tool/har', group: 'Inspect' },
   { key: 'cookies', label: 'Cookie Analyzer', route: '/tool/cookies', group: 'Inspect' },
   { key: 'policy', label: 'Policy Linter', route: '/tool/policy', group: 'Inspect' },
