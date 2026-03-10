@@ -50,7 +50,7 @@ export default function App() {
                 rel="noreferrer"
                 className="focus-ring rounded px-1 text-cyan-300 hover:text-cyan-200"
               >
-                Find Hexyr useful? Support it.
+                Made by Matt Ivan
               </a>
             </span>
             <span className="flex items-center justify-end gap-2">
@@ -62,7 +62,7 @@ export default function App() {
                 rel="noreferrer"
                 className="focus-ring rounded px-1 text-cyan-300 hover:text-cyan-200"
               >
-                Made by Matt Ivan
+                Find Hexyr useful? Support it.
               </a>
             </span>
           </footer>

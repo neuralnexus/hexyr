@@ -146,6 +146,8 @@ Avoid broad global tokens; keep access limited to the `hexyr.com` zone and the o
 
 Community contributions are welcome. Please read `CONTRIBUTING.md` for branch/PR workflow, quality gates, and privacy/security expectations.
 
+For verified commit setup, see `SIGNING.md`.
+
 If you prefer GitHub-based deploys later, add back a deploy workflow with Cloudflare secrets.
 
 ## Project Structure

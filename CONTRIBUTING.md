@@ -44,7 +44,7 @@ pnpm build
 - Keep Worker routes minimal and edge-safe.
 - Avoid large dependencies that inflate startup/bundle cost.
 - Maintain accessibility and keyboard support in UI components.
-- Please ensure you have commit signing enabled. 
+- Please ensure commit signing is enabled. See `SIGNING.md` for SSH signing setup.
 
 ## Security Expectations
 
