@@ -40,7 +40,7 @@ export function CookieAnalyzerPage() {
       </div>
       <pre
         aria-hidden="true"
-        className="pointer-events-none fixed bottom-0 right-3 z-20 origin-bottom-right translate-y-[44%] scale-[0.62] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/75 drop-shadow-[0_0_12px_rgba(56,189,248,0.38)] sm:right-5 sm:scale-[0.72] md:scale-[0.86]"
+        className="pointer-events-none fixed bottom-7 left-1/2 z-10 -translate-x-1/2 translate-y-[38%] scale-[0.58] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/70 drop-shadow-[0_0_10px_rgba(56,189,248,0.32)] sm:bottom-8 sm:scale-[0.68] md:scale-[0.8]"
       >
         {COOKIE_MONSTER_ASCII}
       </pre>
