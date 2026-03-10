@@ -18,7 +18,13 @@
   <url><loc>https://hexyr.com/tool/unicode</loc></url>
   <url><loc>https://hexyr.com/tool/jwt</loc></url>
   <url><loc>https://hexyr.com/tool/hash</loc></url>
+  <url><loc>https://hexyr.com/tool/signer</loc></url>
   <url><loc>https://hexyr.com/tool/bitwise</loc></url>
   <url><loc>https://hexyr.com/tool/hexdump</loc></url>
+  <url><loc>https://hexyr.com/tool/cert</loc></url>
+  <url><loc>https://hexyr.com/tool/query</loc></url>
+  <url><loc>https://hexyr.com/tool/bytes</loc></url>
+  <url><loc>https://hexyr.com/tool/diff</loc></url>
+  <url><loc>https://hexyr.com/tool/pcap</loc></url>
   <url><loc>https://docs.hexyr.com/</loc></url>
 </urlset>

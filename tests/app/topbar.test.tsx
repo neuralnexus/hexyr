@@ -15,7 +15,7 @@ describe('TopBar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Docs').closest('a')?.getAttribute('href')).toBe('https://docs.hexyr.com');
+    expect(screen.getByLabelText('Open docs site').getAttribute('href')).toBe('https://docs.hexyr.com');
     expect(screen.getByLabelText('Open GitHub repository').getAttribute('href')).toBe(
       'https://github.com/neuralnexus/hexyr',
     );

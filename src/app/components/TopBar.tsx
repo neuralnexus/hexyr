@@ -1,4 +1,4 @@
-import { Github, MoonStar, Search, SunMedium } from 'lucide-react';
+import { BookText, Github, MoonStar, Search, SunMedium } from 'lucide-react';
 import { Brand } from './Brand';
 
 interface TopBarProps {
@@ -26,8 +26,9 @@ export function TopBar({ dark, onToggleTheme, onOpenPalette }: TopBarProps) {
           href="https://docs.hexyr.com"
           target="_blank"
           rel="noreferrer"
+          aria-label="Open docs site"
         >
-          Docs
+          <BookText size={15} />
         </a>
         <a
           className="focus-ring rounded-md border border-white/10 bg-surface-800 p-2"
