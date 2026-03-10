@@ -26,7 +26,7 @@ export function CookieAnalyzerPage() {
   const result = useMemo(() => parseSetCookieHeaders(input), [input]);
 
   return (
-    <section className="animate-rise relative space-y-3 overflow-hidden pb-24">
+    <section className="animate-rise relative space-y-3 overflow-hidden pb-40">
       <h1 className="text-lg font-semibold text-slate-100">Cookie / Jar Analyzer</h1>
       <textarea className="focus-ring h-40 w-full resize-none rounded border border-white/10 bg-surface-900/60 p-3 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Paste Set-Cookie lines" />
       <div className="glass rounded-md p-3 text-xs">
@@ -40,7 +40,7 @@ export function CookieAnalyzerPage() {
       </div>
       <pre
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-10 right-1 z-10 origin-bottom-right scale-[0.26] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/45 sm:scale-[0.34] md:scale-[0.42]"
+        className="pointer-events-none absolute -bottom-60 right-2 z-10 origin-bottom-right scale-[0.52] whitespace-pre font-mono text-[10px] leading-[1] text-cyan-200/55 sm:-bottom-56 sm:scale-[0.6] md:-bottom-52 md:scale-[0.72]"
       >
         {COOKIE_MONSTER_ASCII}
       </pre>
