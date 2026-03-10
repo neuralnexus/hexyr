@@ -77,4 +77,4 @@ jobs:
         run: curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sudo sh -s -- -b /usr/local/bin
 
       - name: Run TruffleHog on git history
-        run: trufflehog git file://. --results=verified --fail
+        run: trufflehog git file://. --results=verified --fail --no-update
