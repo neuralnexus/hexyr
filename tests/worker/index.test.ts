@@ -28,6 +28,7 @@ describe('worker routes', () => {
 
   it('serves docs index on docs host', async () => {
     const res = await worker.fetch(new Request('https://docs.hexyr.com/'), env as never, {} as never);
-    expect(await res.text()).toBe('asset:/docs/index.html');
+    const body = await res.text();
+    expect(body).toContain('Hexyr Documentation');
   });
 });

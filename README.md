@@ -5,8 +5,11 @@ It's designed to be a Swiss-Army knife for developers who constantly need to enc
 
 ## Screenshots
 
-- Placeholder: add desktop workspace screenshot
-- Placeholder: add mobile workspace screenshot
+HTTP Signer tool view:
+
+![Hexyr HTTP Signer UI](docs/screenshots/http-signer.svg)
+
+Replace `docs/screenshots/http-signer.svg` with your latest app screenshot when updating visuals.
 
 ## Core Features
 
@@ -100,8 +103,8 @@ pnpm preview
 ## Deploy to Cloudflare Workers
 
 1. Set secrets or env vars:
-   - `CLOUDFLARE_API_TOKEN`
-   - `CLOUDFLARE_ACCOUNT_ID`
+    - `CLOUDFLARE_API_TOKEN`
+    - `CLOUDFLARE_ACCOUNT_ID`
 2. Authenticate Wrangler if needed:
 
 ```bash
@@ -114,12 +117,24 @@ pnpm exec wrangler login
 pnpm run deploy
 ```
 
+### Recommended Cloudflare API Token Scope (Least Privilege)
+
+Create a **custom token** scoped only to the Hexyr account/zone:
+
+- Account: `Workers Scripts:Edit`
+- Account: `Workers Routes:Edit`
+- Account: `Workers Tail:Read` (optional)
+- Zone (`hexyr.com` only): `Zone:Read`
+- Zone (`hexyr.com` only): `DNS:Edit` (only if managing custom-domain DNS via deploy)
+
+Avoid broad global tokens; keep access limited to the `hexyr.com` zone and the owning account.
+
 ## GitHub Actions
 
 - CI workflow runs lint, typecheck, test, and build on PRs and `main` pushes.
-- Deploy workflow runs on `main` and deploys with Wrangler.
 - Security SAST workflow runs CodeQL, dependency review (PR), and secret scanning via Gitleaks.
 - Security DAST workflow runs OWASP ZAP baseline against `https://hexyr.com` on schedule and manual dispatch.
+- Production deploys are handled by Cloudflare's GitHub integration for this Worker service.
 
 ### Security Scanning Notes
 
@@ -131,10 +146,7 @@ pnpm run deploy
 
 Community contributions are welcome. Please read `CONTRIBUTING.md` for branch/PR workflow, quality gates, and privacy/security expectations.
 
-Required GitHub secrets:
-
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+If you prefer GitHub-based deploys later, add back a deploy workflow with Cloudflare secrets.
 
 ## Project Structure
 

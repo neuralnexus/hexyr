@@ -1,8 +1,12 @@
 import { bytesToHex, textToBytes } from '../encoding';
+import { md5Hex } from './md5';
 
-export type HashAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
+export type HashAlgorithm = 'MD5' | 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 
 export async function hashText(input: string, algorithm: HashAlgorithm): Promise<string> {
+  if (algorithm === 'MD5') {
+    return md5Hex(input);
+  }
   const data = textToBytes(input);
   const digest = await crypto.subtle.digest(algorithm, data);
   return bytesToHex(new Uint8Array(digest));
@@ -11,7 +15,7 @@ export async function hashText(input: string, algorithm: HashAlgorithm): Promise
 export async function hmacText(
   message: string,
   key: string,
-  algorithm: Exclude<HashAlgorithm, 'SHA-1'> = 'SHA-256',
+  algorithm: Exclude<HashAlgorithm, 'MD5' | 'SHA-1'> = 'SHA-256',
 ): Promise<string> {
   const imported = await crypto.subtle.importKey(
     'raw',
@@ -28,7 +32,7 @@ export async function hmacText(
 }
 
 export async function md5LegacyNotice(): Promise<string> {
-  return 'MD5 is intentionally not provided as a secure default. Use only for legacy compatibility checks.';
+  return 'MD5 is supported for legacy compatibility only and must not be used for modern security guarantees.';
 }
 
 export * from './signing';

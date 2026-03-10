@@ -41,9 +41,19 @@ export default function App() {
             onOpenPalette={() => setPaletteOpen(true)}
           />
           <AppRoutes />
-          <footer className="glass flex items-center justify-between px-4 text-[11px] text-slate-400">
+          <footer className="glass grid grid-cols-3 items-center px-4 text-[11px] text-slate-400">
             <span>Ctrl+K Command Palette</span>
-            <span className="flex items-center gap-2">
+            <span className="text-center">
+              <a
+                href="https://mattivan.com"
+                target="_blank"
+                rel="noreferrer"
+                className="focus-ring rounded px-1 text-cyan-300 hover:text-cyan-200"
+              >
+                Find Hexyr useful? Support it.
+              </a>
+            </span>
+            <span className="flex items-center justify-end gap-2">
               <span>Local-first: payloads stay in your browser.</span>
               <span className="text-slate-500">•</span>
               <a

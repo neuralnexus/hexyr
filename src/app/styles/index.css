@@ -21,11 +21,11 @@ body {
 }
 
 :root.light body {
-  background-color: #ece8df;
+  background-color: #ded9cf;
   color: #1f2937;
   background-image:
-    radial-gradient(1000px circle at 5% -15%, rgba(59, 130, 246, 0.08), transparent 55%),
-    radial-gradient(850px circle at 95% 5%, rgba(14, 116, 144, 0.08), transparent 50%);
+    radial-gradient(1000px circle at 5% -15%, rgba(59, 130, 246, 0.05), transparent 55%),
+    radial-gradient(850px circle at 95% 5%, rgba(14, 116, 144, 0.06), transparent 50%);
 }
 
 * {
@@ -54,8 +54,8 @@ body {
 }
 
 :root.light .glass {
-  border-color: rgba(30, 41, 59, 0.2);
-  background: rgba(247, 244, 236, 0.88);
+  border-color: rgba(30, 41, 59, 0.24);
+  background: rgba(234, 228, 216, 0.92);
 }
 
 :root.light .brand-chip {
@@ -88,10 +88,13 @@ body {
 
 :root.light .bg-surface-800,
 :root.light .bg-surface-800\/50,
+:root.light .bg-surface-800\/70,
 :root.light .bg-surface-900,
 :root.light .bg-surface-900\/40,
-:root.light .bg-surface-900\/60 {
-  background-color: rgba(243, 239, 230, 0.96);
+:root.light .bg-surface-900\/60,
+:root.light .bg-surface-900\/70,
+:root.light .bg-surface-900\/80 {
+  background-color: rgba(231, 224, 212, 0.95);
 }
 
 :root.light .border-white\/10 {
@@ -100,4 +103,8 @@ body {
 
 :root.light .hover\:text-white:hover {
   color: #0f172a;
+}
+
+:root.light .hover\:bg-white\/5:hover {
+  background-color: rgba(30, 41, 59, 0.08);
 }

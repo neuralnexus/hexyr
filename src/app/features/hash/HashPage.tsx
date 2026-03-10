@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { hashText, hmacText, type HashAlgorithm } from '../../../shared/crypto';
 import { useWorkspace } from '../../hooks/useWorkspace';
 
-const ALGORITHMS: HashAlgorithm[] = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
+const ALGORITHMS: HashAlgorithm[] = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 
 export function HashPage() {
   const { input, setInput } = useWorkspace();
@@ -15,7 +15,10 @@ export function HashPage() {
     let mounted = true;
     async function run() {
       const nextDigest = await hashText(input, algorithm);
-      const nextHmac = key ? await hmacText(input, key, algorithm === 'SHA-1' ? 'SHA-256' : algorithm) : '';
+      const nextHmac =
+        key && algorithm !== 'MD5' && algorithm !== 'SHA-1'
+          ? await hmacText(input, key, algorithm)
+          : '';
       if (mounted) {
         setDigest(nextDigest);
         setHmac(nextHmac);
@@ -73,9 +76,16 @@ export function HashPage() {
       </div>
 
       <Output title="Digest" value={digest} />
-      <Output title="HMAC" value={hmac || 'Provide key to calculate HMAC'} />
+      <Output
+        title="HMAC"
+        value={
+          algorithm === 'MD5' || algorithm === 'SHA-1'
+            ? 'HMAC is available for SHA-256/384/512. Select one of those algorithms.'
+            : hmac || 'Provide key to calculate HMAC'
+        }
+      />
       <p className="text-xs text-amber-300">
-        MD5 is intentionally omitted from default workflows and should only be used for legacy compatibility.
+        MD5 is available for legacy compatibility. Avoid using it for modern cryptographic security.
       </p>
     </section>
   );

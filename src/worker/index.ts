@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { healthRoute } from './routes/health';
 import { metaRoute } from './routes/meta';
+import { DOCS_PAGE_HTML } from './utils/docsPage';
 
 type Bindings = {
   ASSETS: Fetcher;
@@ -33,24 +34,12 @@ app.get('/api/*', (c) => {
 
 app.all('*', async (c) => {
   const url = new URL(c.req.url);
-  if (url.hostname === 'docs.hexyr.com') {
-    if (url.pathname === '/' || url.pathname === '/docs' || url.pathname === '/docs/') {
-      return c.env.ASSETS.fetch(
-        new Request(`${url.origin}/docs/index.html`, {
-          method: 'GET',
-          headers: c.req.raw.headers,
-        }),
-      );
-    }
-
-    const isAsset = /\.[a-zA-Z0-9]+$/.test(url.pathname);
-    if (!isAsset && !url.pathname.startsWith('/docs/')) {
-      return c.env.ASSETS.fetch(
-        new Request(`${url.origin}/docs/index.html`, {
-          method: 'GET',
-          headers: c.req.raw.headers,
-        }),
-      );
+  const host = (c.req.header('host') ?? url.hostname).toLowerCase().split(':')[0];
+  if (host === 'docs.hexyr.com') {
+    const isApi = url.pathname.startsWith('/api/');
+    const isStaticAsset = /\.[a-zA-Z0-9]+$/.test(url.pathname);
+    if (!isApi && !isStaticAsset) {
+      return c.html(DOCS_PAGE_HTML);
     }
   }
   return c.env.ASSETS.fetch(c.req.raw);
