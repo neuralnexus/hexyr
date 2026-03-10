@@ -53,9 +53,15 @@ export async function compressText(input: string, format: CompressionFormat): Pr
     const compressed = format === 'gzip' ? pako.gzip(bytes) : pako.deflate(bytes);
     return bytesToBase64(compressed);
   }
-  const stream = new CompressionStream(resolveFormat(format));
-  const result = await runStream(textToBytes(input), stream);
-  return bytesToBase64(result);
+  try {
+    const stream = new CompressionStream(resolveFormat(format));
+    const result = await runStream(textToBytes(input), stream);
+    return bytesToBase64(result);
+  } catch {
+    const bytes = textToBytes(input);
+    const compressed = format === 'gzip' ? pako.gzip(bytes) : pako.deflate(bytes);
+    return bytesToBase64(compressed);
+  }
 }
 
 export async function decompressBase64(input: string, format: CompressionFormat): Promise<string> {
@@ -67,10 +73,16 @@ export async function decompressBase64(input: string, format: CompressionFormat)
     const decompressed = format === 'gzip' ? pako.ungzip(bytes) : pako.inflate(bytes);
     return bytesToText(decompressed);
   }
-  const stream = new DecompressionStream(resolveFormat(format));
-  const bytes = base64ToBytes(input);
-  const result = await runStream(bytes, stream);
-  return bytesToText(result);
+  try {
+    const stream = new DecompressionStream(resolveFormat(format));
+    const bytes = base64ToBytes(input);
+    const result = await runStream(bytes, stream);
+    return bytesToText(result);
+  } catch {
+    const bytes = base64ToBytes(input);
+    const decompressed = format === 'gzip' ? pako.ungzip(bytes) : pako.inflate(bytes);
+    return bytesToText(decompressed);
+  }
 }
 
 export async function decompressBase64Auto(input: string): Promise<{ format: RuntimeCompressionFormat; text: string }> {

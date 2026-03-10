@@ -77,6 +77,20 @@ export function CompressionPage() {
         >
           Run
         </button>
+        <button
+          type="button"
+          className="focus-ring rounded border border-white/10 bg-surface-800 px-3 py-2"
+          onClick={() => {
+            if (output) {
+              setInput(output);
+              setOutput('');
+              setError('');
+            }
+          }}
+          disabled={!output}
+        >
+          Use output as input
+        </button>
       </div>
       {supported.length === 0 && (
         <div className="rounded border border-amber-400/40 bg-amber-500/10 p-2 text-xs text-amber-300">
