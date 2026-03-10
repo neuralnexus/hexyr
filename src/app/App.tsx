@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { CommandPalette } from './components/CommandPalette';
+import { MobileToolsDrawer } from './components/MobileToolsDrawer';
 import { TopBar } from './components/TopBar';
 import { WorkspaceProvider } from './hooks/useWorkspace';
 import { AppRoutes } from './routes/AppRoutes';
@@ -10,6 +11,7 @@ const THEME_KEY = 'hexyr:theme';
 export default function App() {
   const [dark, setDark] = useState(() => localStorage.getItem(THEME_KEY) !== 'light');
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('light', !dark);
@@ -39,6 +41,7 @@ export default function App() {
             dark={dark}
             onToggleTheme={() => setDark((value) => !value)}
             onOpenPalette={() => setPaletteOpen(true)}
+            onOpenTools={() => setMobileToolsOpen(true)}
           />
           <AppRoutes />
           <footer className="glass grid grid-cols-1 gap-1 px-3 py-2 text-[11px] text-slate-400 md:grid-cols-3 md:items-center md:px-4">
@@ -79,6 +82,7 @@ export default function App() {
             </span>
           </footer>
           <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+          <MobileToolsDrawer open={mobileToolsOpen} onClose={() => setMobileToolsOpen(false)} />
         </div>
       </WorkspaceProvider>
     </BrowserRouter>

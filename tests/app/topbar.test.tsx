@@ -11,7 +11,7 @@ describe('TopBar', () => {
   it('opens docs and github links', () => {
     render(
       <MemoryRouter>
-        <TopBar dark onToggleTheme={vi.fn()} onOpenPalette={vi.fn()} />
+        <TopBar dark onToggleTheme={vi.fn()} onOpenPalette={vi.fn()} onOpenTools={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -25,7 +25,7 @@ describe('TopBar', () => {
     const onToggleTheme = vi.fn();
     render(
       <MemoryRouter>
-        <TopBar dark onToggleTheme={onToggleTheme} onOpenPalette={vi.fn()} />
+        <TopBar dark onToggleTheme={onToggleTheme} onOpenPalette={vi.fn()} onOpenTools={vi.fn()} />
       </MemoryRouter>,
     );
 

@@ -1,16 +1,27 @@
-import { BookText, Github, MoonStar, Search, SunMedium } from 'lucide-react';
+import { BookText, Github, Menu, MoonStar, Search, SunMedium } from 'lucide-react';
 import { Brand } from './Brand';
 
 interface TopBarProps {
   dark: boolean;
   onToggleTheme: () => void;
   onOpenPalette: () => void;
+  onOpenTools: () => void;
 }
 
-export function TopBar({ dark, onToggleTheme, onOpenPalette }: TopBarProps) {
+export function TopBar({ dark, onToggleTheme, onOpenPalette, onOpenTools }: TopBarProps) {
   return (
     <header className="glass flex items-center justify-between px-4">
-      <Brand />
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="focus-ring rounded-md border border-white/10 bg-surface-800 p-2 lg:hidden"
+          onClick={onOpenTools}
+          aria-label="Open tools menu"
+        >
+          <Menu size={15} />
+        </button>
+        <Brand />
+      </div>
       <button
         type="button"
         className="focus-ring hidden w-[38%] max-w-xl items-center gap-2 rounded-md border border-white/10 bg-surface-800 px-3 py-2 text-xs text-slate-300 md:flex"

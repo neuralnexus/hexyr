@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   compressText,
   decompressBase64,
@@ -20,12 +20,19 @@ export function CompressionPage() {
 
   const supported = useMemo(() => getSupportedCompressionFormats(), []);
 
+  useEffect(() => {
+    if (mode === 'compress' && format === 'brotli') {
+      setFormat('gzip');
+    }
+  }, [mode, format]);
+
   const run = async () => {
     try {
       if (mode === 'compress') {
-        const next = await compressText(input, format);
+        const selected: CompressionFormat = format === 'brotli' ? 'gzip' : format;
+        const next = await compressText(input, selected);
         setOutput(next);
-        setLastUsed(`Compressed with ${format}`);
+        setLastUsed(`Compressed with ${selected}`);
       } else if (format === 'brotli') {
         const auto = await decompressBase64Auto(input);
         setOutput(auto.text);
@@ -61,7 +68,7 @@ export function CompressionPage() {
         <select className="focus-ring rounded border border-white/10 bg-surface-800 px-2 py-2" value={format} onChange={(e) => setFormat(e.target.value as CompressionFormat)}>
           <option value="gzip">gzip</option>
           <option value="deflate">deflate</option>
-          <option value="brotli">auto detect (gzip/deflate)</option>
+          <option value="brotli" disabled={mode === 'compress'}>auto detect (decompress only)</option>
         </select>
         <button
           type="button"
@@ -78,6 +85,7 @@ export function CompressionPage() {
       )}
       <textarea className="focus-ring h-36 w-full resize-none rounded border border-white/10 bg-surface-900/60 p-3 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} />
       <p className="text-xs text-slate-400">Detected input format from base64 bytes: {detected}</p>
+      {mode === 'compress' && <p className="text-xs text-slate-500">Compression supports gzip/deflate. Auto mode is only for decompression detection.</p>}
       {lastUsed && <p className="text-xs text-cyan-300">{lastUsed}</p>}
       {error && <div className="rounded border border-red-400/40 bg-red-500/10 p-2 text-sm text-red-300">{error}</div>}
       <pre className="glass max-h-52 overflow-auto rounded-md p-3 font-mono text-xs text-cyan-100">{output}</pre>
