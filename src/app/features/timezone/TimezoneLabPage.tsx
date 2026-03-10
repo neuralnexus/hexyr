@@ -77,8 +77,19 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
             );
           })}
         </div>
+        <div className="absolute left-2 top-1 text-[10px] uppercase tracking-[0.08em] text-slate-300/70">Night</div>
+        <div className="absolute right-2 top-1 text-[10px] uppercase tracking-[0.08em] text-amber-100/70">Daylight</div>
+        <div className="absolute left-2 bottom-1 text-[10px] text-slate-400">-180°</div>
+        <div className="absolute right-2 bottom-1 text-[10px] text-slate-400">+180°</div>
       </div>
-      <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude with timezone markers.</p>
+      <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude. Vertical cyan lines mark selected timezones.</p>
+      <div className="mt-1 flex flex-wrap gap-1.5">
+        {zones.map((zone) => (
+          <span key={zone.zone} className="rounded border border-white/10 bg-surface-900/50 px-1.5 py-0.5 text-[10px] text-slate-300">
+            {zone.zone}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -117,8 +128,9 @@ export function TimezoneLabPage() {
 
   return (
     <section className="animate-rise space-y-3">
-      <h1 className="text-lg font-semibold text-slate-100">Timezone / ISO8601 Lab</h1>
-      <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} placeholder="ISO/unix/wall time, or natural text like 'noon India time' or '8-11am Pacific'" />
+      <h1 className="text-lg font-semibold text-slate-100">TimeZone Lab</h1>
+      <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Time input (supports ranges): 11am-3pm PST, noon India time, 2026-03-10T18:00:00Z" />
+      <p className="text-xs text-slate-500">Tip: range input like <code>8-11am Pacific</code> shows a converted window for each timezone.</p>
       <div className="grid gap-3 lg:grid-cols-2">
         <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={sourceZone} onChange={(e) => setSourceZone(e.target.value)} placeholder="Source timezone for wall time (e.g. America/New_York)" />
         <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={zonesText} onChange={(e) => setZonesText(e.target.value)} placeholder="Comma-separated output zones" />
