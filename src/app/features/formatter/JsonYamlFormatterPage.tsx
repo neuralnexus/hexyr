@@ -16,16 +16,20 @@ export function JsonYamlFormatterPage() {
   const [toFormat, setToFormat] = useState<StructuredFormat>('yaml');
   const [status, setStatus] = useState('');
 
-  const run = (action: 'format' | 'minify' | 'validate') => {
+  const run = (action: 'format' | 'expand' | 'minify' | 'validate') => {
     try {
       if (action === 'validate') {
         const result = validateByKind(input, kind);
         setStatus(result.message);
         return;
       }
-      const next = action === 'format' ? formatByKind(input, kind) : minifyByKind(input, kind);
+      const next = action === 'minify' ? minifyByKind(input, kind) : formatByKind(input, kind);
       setInput(next);
-      setStatus(action === 'format' ? `${kind.toUpperCase()} formatted` : `${kind.toUpperCase()} minified`);
+      setStatus(
+        action === 'minify'
+          ? `${kind.toUpperCase()} minified`
+          : `${kind.toUpperCase()} expanded (pretty-printed)`,
+      );
     } catch (err) {
       setStatus(err instanceof Error ? err.message : 'Formatting failed');
     }
@@ -61,9 +65,9 @@ export function JsonYamlFormatterPage() {
         <button
           type="button"
           className="focus-ring rounded border border-white/10 bg-surface-800 px-3 py-2"
-          onClick={() => run('format')}
+          onClick={() => run('expand')}
         >
-          Format
+          Expand
         </button>
         <button
           type="button"
