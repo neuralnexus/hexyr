@@ -26,6 +26,7 @@ export const TOOL_DEFS: ToolDef[] = [
   { key: 'url', label: 'URL', route: '/tool/url', group: 'Core' },
   { key: 'compress', label: 'Compression', route: '/tool/compress', group: 'Core' },
   { key: 'batch', label: 'Batch Transform', route: '/tool/batch', group: 'Core' },
+  { key: 'format', label: 'Formatter Lab', route: '/tool/format', group: 'Core' },
   { key: 'timezone', label: 'Timezone Lab', route: '/tool/timezone', group: 'Core' },
   { key: 'html', label: 'HTML Entities', route: '/tool/html', group: 'Core' },
   { key: 'unicode', label: 'Unicode', route: '/tool/unicode', group: 'Core' },

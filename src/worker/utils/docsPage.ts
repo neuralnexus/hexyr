@@ -209,7 +209,7 @@ export const DOCS_PAGE_HTML = `<!doctype html>
               <li><code>GET /api/tools</code></li>
               <li><code>POST /api/tools/time-convert</code> (timezone conversion)</li>
               <li><code>POST /api/tools/dns</code>, <code>/webhook-verify</code>, <code>/har-inspect</code></li>
-              <li><code>POST /api/tools/cookie-analyze</code>, <code>/id-inspect</code>, <code>/policy-lint</code></li>
+              <li><code>POST /api/tools/cookie-analyze</code>, <code>/id-inspect</code>, <code>/policy-lint</code>, <code>/format</code></li>
             </ul>
           </section>
 

@@ -105,3 +105,28 @@ curl -s https://hexyr.com/api/tools/policy-lint \
     "rawHeaders": "HTTP/1.1 200 OK\ncontent-type: text/html\naccess-control-allow-origin: *\naccess-control-allow-credentials: true"
   }'
 ```
+
+### `POST /api/tools/format`
+
+```bash
+curl -s https://hexyr.com/api/tools/format \
+  -H 'content-type: application/json' \
+  -d '{
+    "input": "<root><a>1</a></root>",
+    "kind": "xml",
+    "mode": "format"
+  }'
+```
+
+Structured conversion example (`TOML -> JSON`):
+
+```bash
+curl -s https://hexyr.com/api/tools/format \
+  -H 'content-type: application/json' \
+  -d '{
+    "input": "a = 1",
+    "from": "toml",
+    "to": "json",
+    "mode": "format"
+  }'
+```

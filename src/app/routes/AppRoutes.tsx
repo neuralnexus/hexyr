@@ -10,6 +10,7 @@ import { CompressionPage } from '../features/compress/CompressionPage';
 import { CookieAnalyzerPage } from '../features/cookies/CookieAnalyzerPage';
 import { DnsToolkitPage } from '../features/dns/DnsToolkitPage';
 import { DiffPage } from '../features/diff/DiffPage';
+import { JsonYamlFormatterPage } from '../features/formatter/JsonYamlFormatterPage';
 import { HashPage } from '../features/hash/HashPage';
 import { HarInspectorPage } from '../features/har/HarInspectorPage';
 import { HexPage } from '../features/hex/HexPage';
@@ -63,6 +64,7 @@ export function AppRoutes() {
         <Route path="/tool/regex" element={<RegexExtractorPage />} />
         <Route path="/tool/batch" element={<BatchTransformPage />} />
         <Route path="/tool/schema" element={<SchemaValidatorPage />} />
+        <Route path="/tool/format" element={<JsonYamlFormatterPage />} />
         <Route path="/tool/dns" element={<DnsToolkitPage />} />
         <Route path="/tool/webhook" element={<WebhookVerifierPage />} />
         <Route path="/tool/har" element={<HarInspectorPage />} />

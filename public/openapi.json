@@ -253,6 +253,52 @@
           }
         }
       }
+    },
+    "/api/tools/format": {
+      "post": {
+        "summary": "Format/minify/validate JSON, YAML, TOML, XML, INI, SQL, HTTP; convert structured formats",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": ["json", "yaml", "toml"]
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": ["json", "yaml", "toml", "xml", "ini", "sql", "http"]
+                  },
+                  "from": {
+                    "type": "string",
+                    "enum": ["json", "yaml", "toml"]
+                  },
+                  "to": {
+                    "type": "string",
+                    "enum": ["json", "yaml", "toml"]
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": ["format", "minify", "validate"]
+                  }
+                },
+                "required": ["input"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Formatter output or validation result"
+          }
+        }
+      }
     }
   }
 }

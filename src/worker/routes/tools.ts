@@ -2,13 +2,20 @@ import { Hono } from 'hono';
 import { verifyWebhookSignature } from '../../shared/crypto';
 import {
   convertTimestamp,
+  convertStructured,
+  formatByKind,
+  formatStructured,
   formatZoneFile,
   inspectHar,
   inspectId,
   lintHttpPolicies,
+  minifyByKind,
   parseSetCookieHeaders,
   parseZoneFile,
   redactHarForExport,
+  validateByKind,
+  type FormatterKind,
+  type StructuredFormat,
 } from '../../shared/parsing';
 
 export const toolsRoute = new Hono();
@@ -24,6 +31,7 @@ toolsRoute.get('/tools', (c) => {
       '/api/tools/id-inspect',
       '/api/tools/time-convert',
       '/api/tools/policy-lint',
+      '/api/tools/format',
     ],
   });
 });
@@ -81,4 +89,38 @@ toolsRoute.post('/tools/time-convert', async (c) => {
 toolsRoute.post('/tools/policy-lint', async (c) => {
   const body = (await c.req.json()) as { rawHeaders?: string };
   return c.json({ ok: true, result: lintHttpPolicies(body.rawHeaders ?? '') });
+});
+
+toolsRoute.post('/tools/format', async (c) => {
+  const body = (await c.req.json()) as {
+    input?: string;
+    format?: StructuredFormat;
+    kind?: FormatterKind;
+    from?: StructuredFormat;
+    to?: StructuredFormat;
+    mode?: 'format' | 'minify' | 'validate';
+  };
+  const input = body.input ?? '';
+  const format: StructuredFormat = body.format === 'yaml' || body.format === 'toml' ? body.format : 'json';
+  const kind: FormatterKind = body.kind ?? format;
+  const mode = body.mode ?? 'format';
+
+  if (mode === 'format' && body.from && body.to) {
+    const from: StructuredFormat = body.from === 'yaml' || body.from === 'toml' ? body.from : 'json';
+    const to: StructuredFormat = body.to === 'yaml' || body.to === 'toml' ? body.to : 'json';
+    return c.json({ ok: true, mode: 'convert', from, to, output: convertStructured(input, from, to) });
+  }
+
+  if (mode === 'validate') {
+    return c.json({ ok: true, result: validateByKind(input, kind) });
+  }
+
+  if (mode === 'minify') {
+    return c.json({ ok: true, kind, mode, output: minifyByKind(input, kind) });
+  }
+
+  if (kind === 'json' || kind === 'yaml' || kind === 'toml') {
+    return c.json({ ok: true, kind, mode, output: formatStructured(input, kind) });
+  }
+  return c.json({ ok: true, kind, mode, output: formatByKind(input, kind) });
 });

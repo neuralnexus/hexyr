@@ -47,4 +47,37 @@ describe('worker routes', () => {
     expect(body.ok).toBe(true);
     expect(body.result.unixSeconds).toBe(1704067200);
   });
+
+  it('exposes formatter api endpoint', async () => {
+    const res = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/format', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ input: '{"a":1}', format: 'json', mode: 'format' }),
+      }),
+      env as never,
+      {} as never,
+    );
+    const body = (await res.json()) as { ok: boolean; output: string };
+    expect(res.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.output).toContain('\n  "a": 1');
+  });
+
+  it('supports formatter conversion api endpoint', async () => {
+    const res = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/format', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ input: 'a = 1', from: 'toml', to: 'json', mode: 'format' }),
+      }),
+      env as never,
+      {} as never,
+    );
+    const body = (await res.json()) as { ok: boolean; output: string; mode: string };
+    expect(res.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.mode).toBe('convert');
+    expect(body.output).toContain('"a": 1');
+  });
 });
