@@ -45,4 +45,16 @@ describe('timezone lab', () => {
     expect(zones).toContain('America/Chicago');
     expect(zones).toContain('Asia/Seoul');
   });
+
+  it('parses natural language single time expressions', () => {
+    const result = convertTimestamp('noon India time', ['UTC', 'Asia/Kolkata']);
+    expect(result.interpretedInput).toContain('Asia/Kolkata');
+    expect(result.zones.length).toBe(2);
+  });
+
+  it('parses natural language time ranges', () => {
+    const result = convertTimestamp('8-11am Pacific', ['America/Los_Angeles', 'UTC']);
+    expect(result.range).toBeTruthy();
+    expect(result.zones[0].rangeTime).toBeTruthy();
+  });
 });

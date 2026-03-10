@@ -34,6 +34,65 @@ function ClockFace({ time, tick }: { time: string; tick: number }) {
   );
 }
 
+function parseOffsetHours(offset: string): number {
+  const m = offset.match(/GMT([+-])(\d{2}):(\d{2})/);
+  if (!m) return 0;
+  const sign = m[1] === '-' ? -1 : 1;
+  return sign * (Number.parseInt(m[2], 10) + Number.parseInt(m[3], 10) / 60);
+}
+
+function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zone: string; offset: string }> }) {
+  const utc = new Date(epochMs);
+  const utcHours = utc.getUTCHours() + utc.getUTCMinutes() / 60 + utc.getUTCSeconds() / 3600;
+  const sunLongitude = ((utcHours - 12) / 24) * 360;
+  const startLon = sunLongitude - 90;
+  const endLon = sunLongitude + 90;
+
+  const toX = (lon: number) => ((lon + 180) / 360) * 100;
+  const startX = toX(startLon);
+  const endX = toX(endLon);
+
+  return (
+    <div className="glass rounded-md p-3">
+      <div className="mb-2 text-xs uppercase tracking-[0.1em] text-slate-400">Sunlight Coverage</div>
+      <div className="relative h-16 overflow-hidden rounded border border-white/10 bg-surface-900/70">
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950" />
+        {startX >= 0 && endX <= 100 ? (
+          <div className="absolute bottom-0 top-0 bg-gradient-to-r from-amber-300/15 via-yellow-200/35 to-amber-300/15" style={{ left: `${startX}%`, width: `${Math.max(0, endX - startX)}%` }} />
+        ) : (
+          <>
+            <div className="absolute bottom-0 top-0 bg-gradient-to-r from-amber-300/15 via-yellow-200/35 to-amber-300/15" style={{ left: '0%', width: `${Math.max(0, endX)}%` }} />
+            <div className="absolute bottom-0 top-0 bg-gradient-to-r from-amber-300/15 via-yellow-200/35 to-amber-300/15" style={{ left: `${Math.max(0, startX)}%`, width: `${Math.max(0, 100 - Math.max(0, startX))}%` }} />
+          </>
+        )}
+
+        <div className="absolute inset-0">
+          {zones.map((zone) => {
+            const lon = parseOffsetHours(zone.offset) * 15;
+            const x = toX(lon);
+            return (
+              <div key={zone.zone} className="absolute bottom-0 top-0" style={{ left: `${x}%` }}>
+                <div className="h-full w-px bg-cyan-300/35" />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude with timezone markers.</p>
+    </div>
+  );
+}
+
+function DigitalClock({ zone, date, time }: { zone: string; date: string; time: string }) {
+  return (
+    <div className="rounded border border-cyan-400/20 bg-surface-900/70 px-2 py-1 text-right font-mono shadow-[inset_0_0_20px_rgba(8,145,178,0.15)]">
+      <div className="text-[10px] uppercase tracking-[0.1em] text-cyan-300/90">{zone}</div>
+      <div className="text-sm leading-none text-cyan-200">{time}</div>
+      <div className="text-[10px] text-slate-400">{date}</div>
+    </div>
+  );
+}
+
 export function TimezoneLabPage() {
   const [input, setInput] = useState(new Date().toISOString());
   const [sourceZone, setSourceZone] = useState('UTC');
@@ -59,7 +118,7 @@ export function TimezoneLabPage() {
   return (
     <section className="animate-rise space-y-3">
       <h1 className="text-lg font-semibold text-slate-100">Timezone / ISO8601 Lab</h1>
-      <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} placeholder="ISO string, unix seconds/ms, or wall time" />
+      <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={input} onChange={(e) => setInput(e.target.value)} placeholder="ISO/unix/wall time, or natural text like 'noon India time' or '8-11am Pacific'" />
       <div className="grid gap-3 lg:grid-cols-2">
         <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={sourceZone} onChange={(e) => setSourceZone(e.target.value)} placeholder="Source timezone for wall time (e.g. America/New_York)" />
         <input className="focus-ring w-full rounded border border-white/10 bg-surface-900/60 px-3 py-2 font-mono text-sm" value={zonesText} onChange={(e) => setZonesText(e.target.value)} placeholder="Comma-separated output zones" />
@@ -68,10 +127,13 @@ export function TimezoneLabPage() {
         <div className="rounded border border-red-400/40 bg-red-500/10 p-2 text-sm text-red-300">{output.error}</div>
       ) : (
         <div className="space-y-3">
+          <SunCoverageMap epochMs={output.result.unixMilliseconds} zones={output.result.zones.map((z) => ({ zone: z.zone, offset: z.offset }))} />
           <div className="glass rounded-md p-3 text-xs text-slate-300">
             <p>ISO: {output.result.sourceIso}</p>
             <p>Unix seconds: {output.result.unixSeconds}</p>
             <p>RFC 2822: {output.result.rfc2822}</p>
+            {output.result.interpretedInput && <p>Interpreted: {output.result.interpretedInput}</p>}
+            {output.result.range && <p>Range: {output.result.range.startIso} to {output.result.range.endIso} ({output.result.range.durationMinutes}m)</p>}
           </div>
           <div className="grid gap-2 lg:grid-cols-2">
             {output.result.zones.map((zone) => (
@@ -80,8 +142,12 @@ export function TimezoneLabPage() {
                   <div className="font-semibold">{zone.zone}</div>
                   <div>{zone.weekday} {zone.date} {zone.time}</div>
                   <div className="text-slate-400">{zone.offset}</div>
+                  {zone.rangeTime && <div className="text-slate-400">Window: {zone.rangeTime}</div>}
                 </div>
-                <ClockFace time={zone.time} tick={tick} />
+                <div className="flex items-center gap-2">
+                  <DigitalClock zone={zone.zone} date={`${zone.weekday} ${zone.date}`} time={zone.time} />
+                  <ClockFace time={zone.time} tick={tick} />
+                </div>
               </div>
             ))}
           </div>
