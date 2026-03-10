@@ -1,6 +1,6 @@
-import TOML from '@iarna/toml';
 import { XMLBuilder, XMLParser, XMLValidator } from 'fast-xml-parser';
 import { dump, load } from 'js-yaml';
+import { parse as parseToml, stringify as stringifyToml } from 'smol-toml';
 import { format as formatSql } from 'sql-formatter';
 
 export type StructuredFormat = 'json' | 'yaml' | 'toml';
@@ -24,7 +24,7 @@ function normalizeYaml(input: string): unknown {
 
 function normalizeToml(input: string): unknown {
   try {
-    return TOML.parse(input);
+    return parseToml(input);
   } catch (err) {
     throw new Error(err instanceof Error ? `Invalid TOML: ${err.message}` : 'Invalid TOML');
   }
@@ -46,7 +46,7 @@ function stringifyStructured(input: unknown, format: StructuredFormat): string {
       sortKeys: false,
     });
   }
-  return TOML.stringify(input as TOML.JsonMap);
+  return stringifyToml(input as Record<string, unknown>);
 }
 
 function normalizeXml(input: string): unknown {
