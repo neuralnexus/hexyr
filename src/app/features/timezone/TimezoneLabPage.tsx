@@ -9,11 +9,11 @@ function parseClockAngles(time: string): { hour: number; minute: number; second:
   return { hour, minute, second };
 }
 
-function ClockFace({ time, tick }: { time: string; tick: number }) {
+function ClockFace({ time }: { time: string }) {
   const base = parseClockAngles(time);
-  const hour = (base.hour + tick / 120) % 360;
-  const minute = (base.minute + tick / 10) % 360;
-  const second = (base.second + tick * 6) % 360;
+  const hour = base.hour;
+  const minute = base.minute;
+  const second = base.second;
   return (
     <div className="relative h-14 w-14 rounded-full border border-cyan-400/30 bg-surface-900/70 shadow-[0_0_20px_rgba(34,211,238,0.12)]">
       <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-200" />
@@ -70,26 +70,8 @@ function shortZoneLabel(zone: string, offset: string): string {
   return (normalized.slice(0, 4) || 'TZ').padEnd(3, 'X');
 }
 
-function SunCoverageMap({
-  epochMs,
-  tick,
-  range,
-  zones,
-}: {
-  epochMs: number;
-  tick: number;
-  range?: { startIso: string; endIso: string };
-  zones: Array<{ zone: string; offset: string }>;
-}) {
-  let effectiveEpochMs = epochMs + tick * 1000;
-  if (range) {
-    const startMs = Date.parse(range.startIso);
-    const endMs = Date.parse(range.endIso);
-    const spanMs = Math.max(1, endMs - startMs);
-    effectiveEpochMs = startMs + ((tick * 1000) % spanMs);
-  }
-
-  const utc = new Date(effectiveEpochMs);
+function SunCoverageMap({ epochMs, zones, isRangePlayback }: { epochMs: number; zones: Array<{ zone: string; offset: string }>; isRangePlayback: boolean }) {
+  const utc = new Date(epochMs);
   const utcHours = utc.getUTCHours() + utc.getUTCMinutes() / 60 + utc.getUTCSeconds() / 3600;
   const sunLongitude = ((12 - utcHours) / 24) * 360;
   const startLon = sunLongitude - 90;
@@ -174,7 +156,7 @@ function SunCoverageMap({
       </div>
       <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude. Each line color matches its timezone chip.</p>
       <p className="text-[10px] text-slate-500">
-        {range ? 'Map animates through the selected range window.' : 'Map updates every second.'}
+        {isRangePlayback ? 'Map animates through the selected range window.' : 'Map updates every second.'}
       </p>
       <div className="mt-1 flex flex-wrap gap-1.5">
         {markers.map((marker) => (
@@ -196,6 +178,42 @@ function DigitalClock({ zone, date, time }: { zone: string; date: string; time: 
       <div className="text-[10px] text-slate-400">{date}</div>
     </div>
   );
+}
+
+function formatZoneAtEpoch(epochMs: number, zone: string): { date: string; time: string; offset: string; weekday: string } {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: zone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    weekday: 'short',
+    hour12: false,
+    timeZoneName: 'longOffset',
+  });
+  const parts = formatter.formatToParts(new Date(epochMs));
+  const map: Record<string, string> = {};
+  for (const p of parts) map[p.type] = p.value;
+  return {
+    date: `${map.year}-${map.month}-${map.day}`,
+    time: `${map.hour}:${map.minute}:${map.second}`,
+    offset: map.timeZoneName ?? 'GMT+0',
+    weekday: map.weekday ?? '',
+  };
+}
+
+function formatRfc2822(epochMs: number): string {
+  return new Date(epochMs).toUTCString();
+}
+
+function computePlaybackEpoch(baseEpochMs: number, tick: number, range?: { startIso: string; endIso: string }): number {
+  if (!range) return baseEpochMs + tick * 1000;
+  const startMs = Date.parse(range.startIso);
+  const endMs = Date.parse(range.endIso);
+  const spanMs = Math.max(1, endMs - startMs);
+  return startMs + ((tick * 1000) % spanMs);
 }
 
 export function TimezoneLabPage() {
@@ -220,6 +238,26 @@ export function TimezoneLabPage() {
     }
   }, [input, sourceZone, zonesText]);
 
+  const playback = useMemo(() => {
+    if ('error' in output) return null;
+    const epochMs = computePlaybackEpoch(output.result.unixMilliseconds, tick, output.result.range);
+    const summaryDate = new Date(epochMs);
+    const zones = output.result.zones.map((zone) => {
+      const live = formatZoneAtEpoch(epochMs, zone.zone);
+      return {
+        ...zone,
+        ...live,
+      };
+    });
+    return {
+      epochMs,
+      iso: summaryDate.toISOString(),
+      unixSeconds: Math.floor(epochMs / 1000),
+      rfc2822: formatRfc2822(epochMs),
+      zones,
+    };
+  }, [output, tick]);
+
   return (
     <section className="animate-rise space-y-3">
       <h1 className="text-lg font-semibold text-slate-100">TimeZone Lab</h1>
@@ -234,20 +272,19 @@ export function TimezoneLabPage() {
       ) : (
         <div className="space-y-3">
           <SunCoverageMap
-            epochMs={output.result.unixMilliseconds}
-            tick={tick}
-            range={output.result.range}
-            zones={output.result.zones.map((z) => ({ zone: z.zone, offset: z.offset }))}
+            epochMs={playback?.epochMs ?? output.result.unixMilliseconds}
+            zones={(playback?.zones ?? output.result.zones).map((z) => ({ zone: z.zone, offset: z.offset }))}
+            isRangePlayback={Boolean(output.result.range)}
           />
           <div className="glass rounded-md p-3 text-xs text-slate-300">
-            <p>ISO: {output.result.sourceIso}</p>
-            <p>Unix seconds: {output.result.unixSeconds}</p>
-            <p>RFC 2822: {output.result.rfc2822}</p>
+            <p>ISO: {playback?.iso ?? output.result.sourceIso}</p>
+            <p>Unix seconds: {playback?.unixSeconds ?? output.result.unixSeconds}</p>
+            <p>RFC 2822: {playback?.rfc2822 ?? output.result.rfc2822}</p>
             {output.result.interpretedInput && <p>Interpreted: {output.result.interpretedInput}</p>}
             {output.result.range && <p>Range: {output.result.range.startIso} to {output.result.range.endIso} ({output.result.range.durationMinutes}m)</p>}
           </div>
           <div className="grid gap-2 lg:grid-cols-2">
-            {output.result.zones.map((zone) => (
+            {(playback?.zones ?? output.result.zones).map((zone) => (
               <div key={zone.zone} className="glass flex items-center justify-between rounded-md p-3 text-xs text-slate-200">
                 <div>
                   <div className="font-semibold">{zone.zone}</div>
@@ -257,7 +294,7 @@ export function TimezoneLabPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <DigitalClock zone={zone.zone} date={`${zone.weekday} ${zone.date}`} time={zone.time} />
-                  <ClockFace time={zone.time} tick={tick} />
+                  <ClockFace time={zone.time} />
                 </div>
               </div>
             ))}
