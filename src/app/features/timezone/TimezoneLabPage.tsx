@@ -41,6 +41,14 @@ function parseOffsetHours(offset: string): number {
   return sign * (Number.parseInt(m[2], 10) + Number.parseInt(m[3], 10) / 60);
 }
 
+function isDayLongitude(lon: number, startLon: number, endLon: number): boolean {
+  const norm = ((lon + 540) % 360) - 180;
+  const s = ((startLon + 540) % 360) - 180;
+  const e = ((endLon + 540) % 360) - 180;
+  if (s <= e) return norm >= s && norm <= e;
+  return norm >= s || norm <= e;
+}
+
 function shortZoneLabel(zone: string, offset: string): string {
   if (zone === 'UTC') return 'UTC';
   if (zone === 'America/Los_Angeles') return offset === 'GMT-07:00' ? 'PDT' : 'PST';
@@ -93,24 +101,32 @@ function SunCoverageMap({
 
   const markerPalette = ['#38bdf8', '#22d3ee', '#34d399', '#a3e635', '#facc15', '#fb7185', '#c084fc', '#f97316', '#60a5fa', '#f472b6'];
 
-  const markers = zones.map((zone, idx) => {
+  const markers = zones.map((zone) => {
     const lon = parseOffsetHours(zone.offset) * 15;
     return {
       zone: zone.zone,
       x: toX(lon),
-      color: markerPalette[idx % markerPalette.length],
+      lon,
       short: shortZoneLabel(zone.zone, zone.offset),
     };
-  });
+  }).sort((a, b) => a.x - b.x)
+    .map((marker, idx) => ({
+      ...marker,
+      color: markerPalette[idx % markerPalette.length],
+    }));
 
   const labelMarkers = markers
-    .sort((a, b) => a.x - b.x)
     .filter((marker, idx, arr) => idx === 0 || marker.x - arr[idx - 1].x >= 4)
     .map((marker, idx) => ({
       ...marker,
       side: idx % 2 === 0 ? -1 : 1,
       row: idx % 3,
     }));
+
+  const leftIsDay = isDayLongitude(-135, startLon, endLon);
+  const rightIsDay = isDayLongitude(135, startLon, endLon);
+  const leftLabel = leftIsDay ? 'Daylight' : 'Night';
+  const rightLabel = rightIsDay ? 'Daylight' : 'Night';
 
   return (
     <div className="glass rounded-md p-3">
@@ -151,8 +167,8 @@ function SunCoverageMap({
             </div>
           ))}
         </div>
-        <div className="absolute left-2 top-1 text-[10px] uppercase tracking-[0.08em] text-slate-300/70">Night</div>
-        <div className="absolute right-2 top-1 text-[10px] uppercase tracking-[0.08em] text-amber-100/70">Daylight</div>
+        <div className={`absolute left-2 top-1 text-[10px] uppercase tracking-[0.08em] ${leftIsDay ? 'text-amber-100/70' : 'text-slate-300/70'}`}>{leftLabel}</div>
+        <div className={`absolute right-2 top-1 text-[10px] uppercase tracking-[0.08em] ${rightIsDay ? 'text-amber-100/70' : 'text-slate-300/70'}`}>{rightLabel}</div>
         <div className="absolute left-2 bottom-1 text-[10px] text-slate-400">-180°</div>
         <div className="absolute right-2 bottom-1 text-[10px] text-slate-400">+180°</div>
       </div>
