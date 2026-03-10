@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { parseSetCookieHeaders } from '../../../shared/parsing';
 
-const COOKIE_MONSTER_ASCII = `nnjejw                                    
+const COOKIE_MONSTER_ASCII = `                                    
                                0eje000e0ee0           e     w wnj0j0                                
                             0jnwwrrwwrrrrwnn0   e   j   EAA   wwwwwn01                              
                            ernrwrwwrrrjnnnnrrejEAEA   AAAAAAA  nnnrwrn0w                            
