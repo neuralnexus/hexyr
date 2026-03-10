@@ -144,3 +144,7 @@ export function bytesFromBestEffort(input: string): Uint8Array {
     return textToBytes(input);
   }
 }
+
+export * from './bytes-inspector';
+export * from './diff';
+export * from './hexdump';

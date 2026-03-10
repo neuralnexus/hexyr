@@ -21,11 +21,11 @@ body {
 }
 
 :root.light body {
-  background-color: #eef3fb;
-  color: #0f172a;
+  background-color: #ece8df;
+  color: #1f2937;
   background-image:
-    radial-gradient(1000px circle at 5% -15%, rgba(37, 99, 235, 0.1), transparent 55%),
-    radial-gradient(850px circle at 95% 5%, rgba(6, 182, 212, 0.12), transparent 50%);
+    radial-gradient(1000px circle at 5% -15%, rgba(59, 130, 246, 0.08), transparent 55%),
+    radial-gradient(850px circle at 95% 5%, rgba(14, 116, 144, 0.08), transparent 50%);
 }
 
 * {
@@ -54,32 +54,36 @@ body {
 }
 
 :root.light .glass {
-  border-color: rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(30, 41, 59, 0.2);
+  background: rgba(247, 244, 236, 0.88);
 }
 
 :root.light .brand-chip {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(6, 182, 212, 0.14));
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.12), rgba(14, 116, 144, 0.14));
 }
 
 :root.light .text-slate-100 {
-  color: #0f172a;
+  color: #111827;
 }
 
 :root.light .text-slate-200,
 :root.light .text-slate-300 {
-  color: #1e293b;
+  color: #1f2937;
 }
 
 :root.light .text-slate-400,
 :root.light .text-slate-500 {
-  color: #475569;
+  color: #4b5563;
 }
 
 :root.light .text-cyan-100,
 :root.light .text-cyan-200,
 :root.light .text-cyan-300 {
-  color: #0f4f7a;
+  color: #155e75;
+}
+
+:root.light .text-amber-300 {
+  color: #92400e;
 }
 
 :root.light .bg-surface-800,
@@ -87,9 +91,13 @@ body {
 :root.light .bg-surface-900,
 :root.light .bg-surface-900\/40,
 :root.light .bg-surface-900\/60 {
-  background-color: rgba(241, 245, 249, 0.95);
+  background-color: rgba(243, 239, 230, 0.96);
 }
 
 :root.light .border-white\/10 {
-  border-color: rgba(15, 23, 42, 0.14);
+  border-color: rgba(30, 41, 59, 0.2);
+}
+
+:root.light .hover\:text-white:hover {
+  color: #0f172a;
 }

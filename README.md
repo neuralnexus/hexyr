@@ -179,4 +179,4 @@ Includes deterministic coverage for encoding, detection, parsing, entropy, magic
 
 ## License
 
-MIT
+Apache-2.0

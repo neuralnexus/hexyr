@@ -30,3 +30,5 @@ export async function hmacText(
 export async function md5LegacyNotice(): Promise<string> {
   return 'MD5 is intentionally not provided as a secure default. Use only for legacy compatibility checks.';
 }
+
+export * from './signing';

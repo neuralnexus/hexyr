@@ -32,3 +32,5 @@ export function intToIpv4(input: number): string {
 }
 
 export * from './jwt';
+export * from './cert';
+export * from './query';

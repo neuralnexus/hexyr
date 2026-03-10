@@ -34,13 +34,20 @@ app.get('/api/*', (c) => {
 app.all('*', async (c) => {
   const url = new URL(c.req.url);
   if (url.hostname === 'docs.hexyr.com') {
-    const isAsset = /\.[a-zA-Z0-9]+$/.test(url.pathname);
-    if (!isAsset) {
-      const docsUrl = new URL(c.req.url);
-      docsUrl.pathname = '/docs/index.html';
+    if (url.pathname === '/' || url.pathname === '/docs' || url.pathname === '/docs/') {
       return c.env.ASSETS.fetch(
-        new Request(docsUrl.toString(), {
-          method: c.req.method,
+        new Request(`${url.origin}/docs/index.html`, {
+          method: 'GET',
+          headers: c.req.raw.headers,
+        }),
+      );
+    }
+
+    const isAsset = /\.[a-zA-Z0-9]+$/.test(url.pathname);
+    if (!isAsset && !url.pathname.startsWith('/docs/')) {
+      return c.env.ASSETS.fetch(
+        new Request(`${url.origin}/docs/index.html`, {
+          method: 'GET',
           headers: c.req.raw.headers,
         }),
       );
