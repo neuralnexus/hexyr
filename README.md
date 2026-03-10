@@ -4,10 +4,6 @@ Hexyr is a local-first developer hex and encoding toolkit for quickly understand
 
 **Tagline:** A Swiss-Army knife for developers who constantly need to encode, decode, inspect, and understand data.
 
-## Why Hexyr Exists
-
-Developers repeatedly paste opaque payloads into ad hoc scripts, random online tools, or terminal one-liners. Hexyr provides a single deterministic workspace that feels fast, trustworthy, and privacy-conscious.
-
 ## Screenshots
 
 - Placeholder: add desktop workspace screenshot
