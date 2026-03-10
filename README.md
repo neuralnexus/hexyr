@@ -9,7 +9,6 @@ Desktop - HTTP Signer:
 
 ![Hexyr Desktop UI](docs/screenshots/desktop-inspector.png)
 
-
 ## Core Features
 
 - Universal Inspector (paste-anything workflow)
