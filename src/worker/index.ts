@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { healthRoute } from './routes/health';
 import { metaRoute } from './routes/meta';
+import { toolsRoute } from './routes/tools';
 import { DOCS_PAGE_HTML } from './utils/docsPage';
 
 type Bindings = {
@@ -27,6 +28,7 @@ app.use('*', async (c, next) => {
 
 app.route('/api', healthRoute);
 app.route('/api', metaRoute);
+app.route('/api', toolsRoute);
 
 app.get('/api/*', (c) => {
   return c.json({ ok: false, error: 'Not Found' }, 404);

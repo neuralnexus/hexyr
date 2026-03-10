@@ -22,6 +22,13 @@ Desktop - HTTP Signer:
 - Bitwise operations, endianness swap, IPv4/int conversion, timestamp conversion
 - Entropy, stats, frequency hints, magic byte detection
 - Deterministic explainers (rule-based, no external AI)
+- DNS toolkit (zone parse/format/validation + TTL sanity)
+- Webhook signature verifier (Stripe/GitHub/Slack)
+- HAR inspector (header/cookie extraction + anomaly + redaction export)
+- Cookie/Jar analyzer (flag and expiry validation)
+- UUID/ULID/KSUID utility (generate/validate/timestamp/entropy)
+- Timezone/ISO8601 lab (cross-timezone normalization)
+- Policy linter pack (CSP/CORS/security headers)
 
 ## Universal Inspector
 
@@ -82,8 +89,51 @@ Local execution keeps interactions faster, lowers edge complexity, and reduces r
 - `/tool/hash`
 - `/tool/bitwise`
 - `/tool/hexdump`
+- `/tool/dns`
+- `/tool/webhook`
+- `/tool/har`
+- `/tool/cookies`
+- `/tool/ids`
+- `/tool/timezone`
+- `/tool/policy`
 - `/api/health`
 - `/api/meta`
+- `/api/tools`
+
+## API Reference
+
+Hexyr exposes integration-friendly JSON endpoints under `/api/tools/*`.
+OpenAPI spec: `/openapi.json` (local: `http://localhost:5173/openapi.json`, prod: `https://hexyr.com/openapi.json`).
+
+### Health / metadata
+
+- `GET /api/health`
+- `GET /api/meta`
+- `GET /api/tools` (lists available tool endpoints)
+
+### Tool endpoints
+
+- `POST /api/tools/dns`
+  - body: `{ "zoneText": "...", "format": true }`
+  - returns parsed records, syntax/TTL diagnostics, optional formatted zone output
+- `POST /api/tools/webhook-verify`
+  - body: `{ "provider": "stripe|github|slack", "payload": "...", "secret": "...", "signatureHeader": "...", "timestampHeader": "..." }`
+  - verifies signatures for Stripe/GitHub/Slack webhook payloads
+- `POST /api/tools/har-inspect`
+  - body: `{ "harText": "...", "redactionExport": true }`
+  - returns entry summary, anomalies, and optional redacted HAR export
+- `POST /api/tools/cookie-analyze`
+  - body: `{ "setCookieText": "Set-Cookie: ..." }`
+  - parses cookies and validates Secure/HttpOnly/SameSite/expiry issues
+- `POST /api/tools/id-inspect`
+  - body: `{ "id": "..." }`
+  - detects UUID/ULID/KSUID, validates format, returns timestamp/entropy hints
+- `POST /api/tools/time-convert`
+  - body: `{ "input": "...", "zones": ["UTC", "America/New_York"], "sourceZone": "UTC" }`
+  - worldtimebuddy-style normalization and timezone conversion output
+- `POST /api/tools/policy-lint`
+  - body: `{ "rawHeaders": "HTTP/1.1 200 OK\ncontent-security-policy: ..." }`
+  - lints CSP, CORS, and common security headers
 
 ## Local Development
 

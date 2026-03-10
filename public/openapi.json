@@ -1,0 +1,258 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hexyr Integration API",
+    "version": "0.1.0",
+    "description": "Thin JSON API for Hexyr health, metadata, and tool integrations."
+  },
+  "servers": [
+    {
+      "url": "https://hexyr.com"
+    },
+    {
+      "url": "http://localhost:5173"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          }
+        }
+      }
+    },
+    "/api/meta": {
+      "get": {
+        "summary": "Runtime metadata",
+        "responses": {
+          "200": {
+            "description": "Service metadata"
+          }
+        }
+      }
+    },
+    "/api/tools": {
+      "get": {
+        "summary": "List tool endpoints",
+        "responses": {
+          "200": {
+            "description": "Available tool endpoints"
+          }
+        }
+      }
+    },
+    "/api/tools/dns": {
+      "post": {
+        "summary": "Parse and validate DNS zone text",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "zoneText": {
+                    "type": "string"
+                  },
+                  "format": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["zoneText"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DNS parse result"
+          }
+        }
+      }
+    },
+    "/api/tools/webhook-verify": {
+      "post": {
+        "summary": "Verify Stripe/GitHub/Slack webhook signature",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "enum": ["stripe", "github", "slack"]
+                  },
+                  "payload": {
+                    "type": "string"
+                  },
+                  "secret": {
+                    "type": "string"
+                  },
+                  "signatureHeader": {
+                    "type": "string"
+                  },
+                  "timestampHeader": {
+                    "type": "string"
+                  }
+                },
+                "required": ["provider", "payload", "secret", "signatureHeader"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook signature verification result"
+          }
+        }
+      }
+    },
+    "/api/tools/har-inspect": {
+      "post": {
+        "summary": "Inspect HAR for anomalies and redaction export",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "harText": {
+                    "type": "string"
+                  },
+                  "redactionExport": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["harText"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HAR report"
+          }
+        }
+      }
+    },
+    "/api/tools/cookie-analyze": {
+      "post": {
+        "summary": "Parse and lint Set-Cookie headers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "setCookieText": {
+                    "type": "string"
+                  }
+                },
+                "required": ["setCookieText"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cookie analysis result"
+          }
+        }
+      }
+    },
+    "/api/tools/id-inspect": {
+      "post": {
+        "summary": "Inspect UUID/ULID/KSUID",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ID inspection result"
+          }
+        }
+      }
+    },
+    "/api/tools/time-convert": {
+      "post": {
+        "summary": "Convert timestamps across timezones",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "zones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sourceZone": {
+                    "type": "string"
+                  }
+                },
+                "required": ["input"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Timezone conversion result"
+          }
+        }
+      }
+    },
+    "/api/tools/policy-lint": {
+      "post": {
+        "summary": "Lint CSP/CORS/security headers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rawHeaders": {
+                    "type": "string"
+                  }
+                },
+                "required": ["rawHeaders"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy lint result"
+          }
+        }
+      }
+    }
+  }
+}

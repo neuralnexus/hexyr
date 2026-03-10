@@ -72,6 +72,25 @@ export const DOCS_PAGE_HTML = `<!doctype html>
         padding: 16px;
       }
       .doc-body { padding: 18px; }
+      .kpis { display: grid; gap: 8px; margin-top: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      @media (min-width: 720px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+      .kpi {
+        border: 1px solid rgba(148,163,184,.2);
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: rgba(10,14,22,.65);
+      }
+      .kpi strong { display: block; color: #e2e8f0; font-size: 13px; }
+      .kpi span { font-size: 11px; color: #8da2b8; }
+      .tool-grid { display: grid; gap: 10px; grid-template-columns: 1fr; margin-top: 8px; }
+      @media (min-width: 860px) { .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      .tool-card {
+        border: 1px solid rgba(148,163,184,.2);
+        border-radius: 10px;
+        padding: 10px;
+        background: rgba(9,14,24,.5);
+      }
+      .tool-card b { color: #d9e7f5; }
       .toc { position: sticky; top: 74px; }
       .toc a {
         display: block;
@@ -104,6 +123,10 @@ export const DOCS_PAGE_HTML = `<!doctype html>
         margin-top: 20px;
         color: #64748b;
         font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
       }
       code { color: #a5f3fc; font-family: "JetBrains Mono", ui-monospace, monospace; }
     </style>
@@ -131,6 +154,12 @@ export const DOCS_PAGE_HTML = `<!doctype html>
           <a class="action" href="https://hexyr.com/inspect">Universal Inspector</a>
           <a class="action" href="https://hexyr.com/tool/signer">HTTP Signer</a>
         </div>
+        <div class="kpis">
+          <div class="kpi"><strong>Local-first</strong><span>Payloads stay in browser</span></div>
+          <div class="kpi"><strong>Deterministic</strong><span>No GenAI in MVP transforms</span></div>
+          <div class="kpi"><strong>Cloudflare-ready</strong><span>Worker + assets architecture</span></div>
+          <div class="kpi"><strong>Integration API</strong><span>/api/tools endpoints for automation</span></div>
+        </div>
       </div>
 
       <div class="layout">
@@ -142,7 +171,7 @@ export const DOCS_PAGE_HTML = `<!doctype html>
           <a href="#api">API</a>
           <a href="#deployment">Deployment</a>
           <a href="#contributing">Contributing</a>
-        </div>
+        </aside>
 
         <article class="card doc-body">
           <section id="getting-started" class="section">
@@ -154,12 +183,12 @@ export const DOCS_PAGE_HTML = `<!doctype html>
 
           <section id="tools" class="section">
             <h3>Tools Reference</h3>
-            <ul>
-              <li>Universal Inspector for unknown payloads</li>
-              <li>Core encoders/decoders: hex, base64, binary, URL, HTML entities, Unicode</li>
-              <li>Inspectors: JWT, hexdump, ASN.1/DER, TLS chain, compact-binary heuristics</li>
-              <li>Crypto/utilities: hash/HMAC/HTTP signer, bitwise helpers, diff, batch transforms</li>
-            </ul>
+            <div class="tool-grid">
+              <div class="tool-card"><b>Universal Inspector</b><p>Paste unknown data, get format hints, warnings, and quick actions.</p></div>
+              <div class="tool-card"><b>Encoding Core</b><p>Text/Hex/Base64/Binary/URL/HTML/Unicode transforms with reversible flows.</p></div>
+              <div class="tool-card"><b>Inspection</b><p>JWT, Hexdump, ASN.1/DER, TLS verifier, compact-binary byte inspectors.</p></div>
+              <div class="tool-card"><b>Automation Utilities</b><p>HTTP signer/replay, regex extract, diff mode, batch transform, schema checks.</p></div>
+            </div>
           </section>
 
           <section id="privacy" class="section">
@@ -167,17 +196,20 @@ export const DOCS_PAGE_HTML = `<!doctype html>
             <ul>
               <li>Transforms run client-side by default.</li>
               <li>No backend payload persistence in MVP.</li>
-              <li>No Cloudflare KV for this architecture.</li>
               <li>JWT decoding is view-only and does not verify signatures.</li>
             </ul>
           </section>
 
           <section id="api" class="section">
             <h3>API</h3>
-            <p>Worker API intentionally remains thin:</p>
+            <p>Worker API supports health/meta plus integration tool endpoints:</p>
             <ul>
               <li><code>GET /api/health</code></li>
               <li><code>GET /api/meta</code></li>
+              <li><code>GET /api/tools</code></li>
+              <li><code>POST /api/tools/time-convert</code> (timezone conversion)</li>
+              <li><code>POST /api/tools/dns</code>, <code>/webhook-verify</code>, <code>/har-inspect</code></li>
+              <li><code>POST /api/tools/cookie-analyze</code>, <code>/id-inspect</code>, <code>/policy-lint</code></li>
             </ul>
           </section>
 
@@ -203,7 +235,10 @@ export const DOCS_PAGE_HTML = `<!doctype html>
           </section>
         </article>
       </div>
-      <footer>Local-first by default. No backend payload persistence.</footer>
+      <footer>
+        <span>Local-first by default. No backend payload persistence.</span>
+        <span>Need help? Open an issue on GitHub.</span>
+      </footer>
     </main>
   </body>
 </html>

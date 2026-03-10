@@ -31,4 +31,20 @@ describe('worker routes', () => {
     const body = await res.text();
     expect(body).toContain('Hexyr Documentation');
   });
+
+  it('exposes time conversion api endpoint', async () => {
+    const res = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/time-convert', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ input: '1704067200', zones: ['UTC'] }),
+      }),
+      env as never,
+      {} as never,
+    );
+    const body = (await res.json()) as { ok: boolean; result: { unixSeconds: number } };
+    expect(res.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.result.unixSeconds).toBe(1704067200);
+  });
 });
