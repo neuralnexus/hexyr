@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Asn1ViewerPage } from '../features/asn1/Asn1ViewerPage';
+import { AsciiArtPage } from '../features/ascii/AsciiArtPage';
 import { Base64Page } from '../features/base64/Base64Page';
 import { BatchTransformPage } from '../features/batch/BatchTransformPage';
 import { BinaryPage } from '../features/binary/BinaryPage';
@@ -65,6 +66,7 @@ export function AppRoutes() {
         <Route path="/tool/batch" element={<BatchTransformPage />} />
         <Route path="/tool/schema" element={<SchemaValidatorPage />} />
         <Route path="/tool/format" element={<JsonYamlFormatterPage />} />
+        <Route path="/tool/ascii" element={<AsciiArtPage />} />
         <Route path="/tool/dns" element={<DnsToolkitPage />} />
         <Route path="/tool/webhook" element={<WebhookVerifierPage />} />
         <Route path="/tool/har" element={<HarInspectorPage />} />

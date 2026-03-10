@@ -64,12 +64,51 @@ function toArpa(ipv4: string): string {
 
 async function rdapLookup(target: string): Promise<unknown> {
   const isIp = isIpv4(target);
-  const url = isIp ? `https://rdap.org/ip/${target}` : `https://rdap.org/domain/${target}`;
-  const res = await fetch(url, { headers: { accept: 'application/rdap+json, application/json' } });
-  if (!res.ok) {
-    throw new Error(`RDAP lookup failed (${res.status})`);
+  const tld = target.includes('.') ? target.split('.').at(-1)?.toLowerCase() ?? '' : '';
+
+  const urls = isIp
+    ? [
+        `https://rdap.arin.net/registry/ip/${target}`,
+        `https://www.rdap.net/ip/${target}`,
+        `https://rdap.org/ip/${target}`,
+      ]
+    : [
+        ...(tld === 'com' || tld === 'net' ? [`https://rdap.verisign.com/${tld}/v1/domain/${target}`] : []),
+        `https://www.rdap.net/domain/${target}`,
+        `https://rdap.org/domain/${target}`,
+      ];
+
+  let lastStatus = 0;
+  for (const url of urls) {
+    const res = await fetch(url, {
+      headers: {
+        accept: 'application/rdap+json, application/json',
+        'user-agent': 'hexyr-dns-toolkit/1.0',
+      },
+    });
+    if (res.ok) {
+      return res.json();
+    }
+    lastStatus = res.status;
   }
-  return res.json();
+  throw new Error(`RDAP lookup failed (${lastStatus || 'unknown'})`);
+}
+
+async function timedFetch(url: string): Promise<{ ok: boolean; status: number; responseTimeMs: number; finalUrl: string }> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort('timeout'), 5000);
+  const start = Date.now();
+  try {
+    const res = await fetch(url, { redirect: 'follow', signal: controller.signal });
+    return {
+      ok: res.ok,
+      status: res.status,
+      responseTimeMs: Date.now() - start,
+      finalUrl: res.url,
+    };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function summarizeAnswers(answers: DnsAnswer[]): Array<{ name: string; ttl: number; data: string; type: number }> {
@@ -247,12 +286,120 @@ async function runDnsTool(tool: string, targetRaw: string, requesterIp: string):
     };
   }
 
+  if (tool === 'Ping') {
+    const a = await dohQuery(target, 'A');
+    const http = await timedFetch(`https://${target}`);
+    return {
+      tool,
+      target,
+      resolvedIp: a.answers[0]?.data ?? null,
+      responseTimeMs: http.responseTimeMs,
+      httpStatus: http.status,
+      ok: http.ok,
+      note: 'ICMP is unavailable in Workers; this is HTTPS reachability latency.',
+      localCommand: `ping -c 4 ${target}`,
+    };
+  }
+
+  if (tool === 'Trace') {
+    const hops: Array<{ host: string; type: string; next?: string }> = [];
+    let current = target;
+    for (let i = 0; i < 8; i += 1) {
+      const cname = await dohQuery(current, 'CNAME');
+      if (cname.answers.length === 0) break;
+      const next = (cname.answers[0]?.data ?? '').replace(/\.$/, '');
+      if (!next) break;
+      hops.push({ host: current, type: 'CNAME', next });
+      current = next;
+    }
+    const a = await dohQuery(current, 'A');
+    hops.push({ host: current, type: 'A', next: a.answers[0]?.data });
+    return {
+      tool,
+      target,
+      hops,
+      note: 'DNS alias trace only; packet-level traceroute is unavailable in Workers.',
+      localCommand: `traceroute ${target}`,
+    };
+  }
+
+  if (tool === 'TCP Lookup') {
+    const checks = await Promise.all(
+      [80, 443].map(async (port) => {
+        const scheme = port === 443 ? 'https' : 'http';
+        const result = await timedFetch(`${scheme}://${target}:${port}`);
+        return { port, ...result };
+      }),
+    );
+    return {
+      tool,
+      target,
+      checks,
+      note: 'Workers cannot open raw TCP sockets in this tool path; using HTTP(S) probe.',
+      localCommand: `nc -vz ${target} 25 53 80 443`,
+    };
+  }
+
+  if (tool === 'Test Email Server') {
+    const mx = await dohQuery(target, 'MX');
+    const servers = await Promise.all(
+      mx.answers.map(async (answer) => {
+        const data = answer.data ?? '';
+        const host = data.split(/\s+/).at(-1)?.replace(/\.$/, '') ?? '';
+        const a = host ? await dohQuery(host, 'A') : { status: 0, answers: [] as DnsAnswer[] };
+        return {
+          mx: data,
+          host,
+          resolvedIp: a.answers[0]?.data ?? null,
+        };
+      }),
+    );
+    return {
+      tool,
+      target,
+      mxCount: mx.answers.length,
+      servers,
+      note: 'SMTP handshake probing is not available in this runtime; returns MX + resolution diagnostics.',
+      localCommand: `swaks --server $(dig +short MX ${target} | head -1 | awk '{print $2}') --timeout 10`,
+    };
+  }
+
+  if (tool === 'Email Deliverability') {
+    const [mx, spfTxt, dmarc, tlsRpt, mtaSts] = await Promise.all([
+      dohQuery(target, 'MX'),
+      dohQuery(target, 'TXT'),
+      dohQuery(`_dmarc.${target}`, 'TXT'),
+      dohQuery(`_smtp._tls.${target}`, 'TXT'),
+      dohQuery(`_mta-sts.${target}`, 'TXT'),
+    ]);
+    const spf = spfTxt.answers.filter((x) => (x.data ?? '').toLowerCase().includes('v=spf1'));
+    return {
+      tool,
+      target,
+      signals: {
+        mxRecords: mx.answers.length,
+        hasSpf: spf.length > 0,
+        hasDmarc: dmarc.answers.length > 0,
+        hasTlsRpt: tlsRpt.answers.length > 0,
+        hasMtaSts: mtaSts.answers.length > 0,
+      },
+      details: {
+        mx: summarizeAnswers(mx.answers),
+        spf: summarizeAnswers(spf),
+        dmarc: summarizeAnswers(dmarc.answers),
+        tlsRpt: summarizeAnswers(tlsRpt.answers),
+        mtaSts: summarizeAnswers(mtaSts.answers),
+      },
+    };
+  }
+
   if (tool === 'Ping' || tool === 'Trace' || tool === 'TCP Lookup' || tool === 'Test Email Server' || tool === 'Email Deliverability') {
     return {
       tool,
       target,
-      supported: false,
-      note: 'Raw network probing is not available in browser/Workers runtime. Use DNS/HTTP diagnostics as alternatives.',
+      status: 'unsupported',
+      note: 'Unsupported in browser/Workers runtime for deep probing. Run equivalent network checks locally from shell.',
+      localCommand: `dig ${target} && nslookup ${target}`,
     };
   }
 

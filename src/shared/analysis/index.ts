@@ -146,6 +146,7 @@ export function bytesFromBestEffort(input: string): Uint8Array {
 }
 
 export * from './bytes-inspector';
+export * from './ascii';
 export * from './compression';
 export * from './diff';
 export * from './batch';

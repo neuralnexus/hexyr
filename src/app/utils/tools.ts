@@ -26,6 +26,7 @@ export const TOOL_DEFS: ToolDef[] = [
   { key: 'binary', label: 'Binary', route: '/tool/binary', group: 'Core' },
   { key: 'url', label: 'URL', route: '/tool/url', group: 'Core' },
   { key: 'compress', label: 'Compression', route: '/tool/compress', group: 'Core' },
+  { key: 'ascii', label: 'ASCII Art Generator', route: '/tool/ascii', group: 'Core', aliases: ['ascii', 'text art', 'image to ascii', 'photo ascii'] },
   { key: 'batch', label: 'Batch Transform', route: '/tool/batch', group: 'Core' },
   {
     key: 'format',

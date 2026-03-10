@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { convertTimestamp, getPopularTimezones } from '../../../shared/parsing';
 
 function parseClockAngles(time: string): { hour: number; minute: number; second: number } {
@@ -9,22 +9,25 @@ function parseClockAngles(time: string): { hour: number; minute: number; second:
   return { hour, minute, second };
 }
 
-function ClockFace({ time }: { time: string }) {
-  const { hour, minute, second } = parseClockAngles(time);
+function ClockFace({ time, tick }: { time: string; tick: number }) {
+  const base = parseClockAngles(time);
+  const hour = (base.hour + tick / 120) % 360;
+  const minute = (base.minute + tick / 10) % 360;
+  const second = (base.second + tick * 6) % 360;
   return (
     <div className="relative h-14 w-14 rounded-full border border-cyan-400/30 bg-surface-900/70 shadow-[0_0_20px_rgba(34,211,238,0.12)]">
       <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-200" />
       <span
         className="absolute left-1/2 top-1/2 block h-4 w-0.5 origin-bottom rounded bg-slate-100"
-        style={{ transform: `translate(-50%, -100%) rotate(${hour}deg)`, animation: 'clock-hour 43200s linear infinite' }}
+        style={{ transform: `translate(-50%, -100%) rotate(${hour}deg)` }}
       />
       <span
         className="absolute left-1/2 top-1/2 block h-5 w-0.5 origin-bottom rounded bg-cyan-300"
-        style={{ transform: `translate(-50%, -100%) rotate(${minute}deg)`, animation: 'clock-minute 3600s linear infinite' }}
+        style={{ transform: `translate(-50%, -100%) rotate(${minute}deg)` }}
       />
       <span
         className="absolute left-1/2 top-1/2 block h-6 w-px origin-bottom bg-rose-300"
-        style={{ transform: `translate(-50%, -100%) rotate(${second}deg)`, animation: 'clock-second 60s linear infinite' }}
+        style={{ transform: `translate(-50%, -100%) rotate(${second}deg)` }}
       />
       <span className="absolute inset-[3px] rounded-full border border-white/10" />
     </div>
@@ -35,6 +38,14 @@ export function TimezoneLabPage() {
   const [input, setInput] = useState(new Date().toISOString());
   const [sourceZone, setSourceZone] = useState('UTC');
   const [zonesText, setZonesText] = useState(getPopularTimezones().join(', '));
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setTick((value) => value + 1);
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const output = useMemo(() => {
     try {
@@ -70,7 +81,7 @@ export function TimezoneLabPage() {
                   <div>{zone.weekday} {zone.date} {zone.time}</div>
                   <div className="text-slate-400">{zone.offset}</div>
                 </div>
-                <ClockFace time={zone.time} />
+                <ClockFace time={zone.time} tick={tick} />
               </div>
             ))}
           </div>
