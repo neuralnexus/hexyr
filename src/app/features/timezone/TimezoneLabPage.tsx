@@ -41,6 +41,11 @@ function parseOffsetHours(offset: string): number {
   return sign * (Number.parseInt(m[2], 10) + Number.parseInt(m[3], 10) / 60);
 }
 
+function shortZoneLabel(zone: string): string {
+  const tail = zone.split('/').at(-1) ?? zone;
+  return tail.replace(/_/g, '').slice(0, 4).toUpperCase();
+}
+
 function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zone: string; offset: string }> }) {
   const utc = new Date(epochMs);
   const utcHours = utc.getUTCHours() + utc.getUTCMinutes() / 60 + utc.getUTCSeconds() / 3600;
@@ -51,6 +56,22 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
   const toX = (lon: number) => ((lon + 180) / 360) * 100;
   const startX = toX(startLon);
   const endX = toX(endLon);
+
+  const markerPalette = ['#38bdf8', '#22d3ee', '#34d399', '#a3e635', '#facc15', '#fb7185', '#c084fc', '#f97316', '#60a5fa', '#f472b6'];
+
+  const markers = zones.map((zone, idx) => {
+    const lon = parseOffsetHours(zone.offset) * 15;
+    return {
+      zone: zone.zone,
+      x: toX(lon),
+      color: markerPalette[idx % markerPalette.length],
+      short: shortZoneLabel(zone.zone),
+    };
+  });
+
+  const labelMarkers = markers
+    .sort((a, b) => a.x - b.x)
+    .filter((marker, idx, arr) => idx === 0 || marker.x - arr[idx - 1].x >= 5);
 
   return (
     <div className="glass rounded-md p-3">
@@ -67,26 +88,36 @@ function SunCoverageMap({ epochMs, zones }: { epochMs: number; zones: Array<{ zo
         )}
 
         <div className="absolute inset-0">
-          {zones.map((zone) => {
-            const lon = parseOffsetHours(zone.offset) * 15;
-            const x = toX(lon);
+          {markers.map((marker) => {
             return (
-              <div key={zone.zone} className="absolute bottom-0 top-0" style={{ left: `${x}%` }}>
-                <div className="h-full w-px bg-cyan-300/35" />
+              <div key={marker.zone} className="absolute bottom-0 top-0" style={{ left: `${marker.x}%` }}>
+                <div className="h-full w-[2px]" style={{ backgroundColor: marker.color, opacity: 0.65 }} />
               </div>
             );
           })}
+        </div>
+        <div className="pointer-events-none absolute inset-0">
+          {labelMarkers.map((marker) => (
+            <div
+              key={`${marker.zone}-label`}
+              className="absolute -translate-x-1/2 text-[9px] font-mono"
+              style={{ left: `${marker.x}%`, top: '1.15rem', color: marker.color }}
+            >
+              {marker.short}
+            </div>
+          ))}
         </div>
         <div className="absolute left-2 top-1 text-[10px] uppercase tracking-[0.08em] text-slate-300/70">Night</div>
         <div className="absolute right-2 top-1 text-[10px] uppercase tracking-[0.08em] text-amber-100/70">Daylight</div>
         <div className="absolute left-2 bottom-1 text-[10px] text-slate-400">-180°</div>
         <div className="absolute right-2 bottom-1 text-[10px] text-slate-400">+180°</div>
       </div>
-      <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude. Vertical cyan lines mark selected timezones.</p>
+      <p className="mt-1 text-[11px] text-slate-500">Approximate day/night by longitude. Each line color matches its timezone chip.</p>
       <div className="mt-1 flex flex-wrap gap-1.5">
-        {zones.map((zone) => (
-          <span key={zone.zone} className="rounded border border-white/10 bg-surface-900/50 px-1.5 py-0.5 text-[10px] text-slate-300">
-            {zone.zone}
+        {markers.map((marker) => (
+          <span key={marker.zone} className="inline-flex items-center gap-1 rounded border border-white/10 bg-surface-900/50 px-1.5 py-0.5 text-[10px] text-slate-300">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: marker.color }} />
+            {marker.zone}
           </span>
         ))}
       </div>
