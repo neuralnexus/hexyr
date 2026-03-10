@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy": "pnpm build && wrangler deploy --domain hexyr.com --domain docs.hexyr.com",
+    "deploy": "pnpm build && pnpm exec wrangler deploy --domain hexyr.com --domain docs.hexyr.com",
     "worker:dev": "wrangler dev"
   },
   "dependencies": {
