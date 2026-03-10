@@ -43,7 +43,7 @@ export default function App() {
           <AppRoutes />
           <footer className="glass grid grid-cols-1 gap-1 px-3 py-2 text-[11px] text-slate-400 md:grid-cols-3 md:items-center md:px-4">
             <span className="text-center md:hidden">
-              <span>Payloads stay local</span>
+              <span>Data stays local</span>
               <span className="px-1 text-slate-500">|</span>
               <a
                 href="https://mattivan.com"
@@ -66,7 +66,7 @@ export default function App() {
               </a>
             </span>
             <span className="hidden items-center gap-2 md:flex md:justify-end">
-              <span>Local-first: payloads stay in your browser.</span>
+              <span>Data stays local.</span>
               <span className="text-slate-500">•</span>
               <a
                 href="https://donate.stripe.com/eVq5kD1mTgvq7kd0MBeZ200"

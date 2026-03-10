@@ -9,8 +9,9 @@ afterEach(() => {
 describe('App shell', () => {
   it('renders footer attribution link', () => {
     render(<App />);
-    const link = screen.getByText('Made by Matt Ivan');
-    expect(link.getAttribute('href')).toBe('https://mattivan.com');
+    const links = screen.getAllByText('Made by Matt Ivan');
+    expect(links.length).toBeGreaterThan(0);
+    expect(links[0].getAttribute('href')).toBe('https://mattivan.com');
   });
 
   it('opens command palette with Ctrl+K', () => {
