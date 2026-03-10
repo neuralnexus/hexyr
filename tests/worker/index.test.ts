@@ -80,4 +80,35 @@ describe('worker routes', () => {
     expect(body.mode).toBe('convert');
     expect(body.output).toContain('"a": 1');
   });
+
+  it('applies reasonable rate limiting on tool APIs', async () => {
+    const limitedEnv = {
+      ...env,
+      API_RATE_LIMIT_MAX: '2',
+      API_RATE_LIMIT_WINDOW_SECONDS: '60',
+    };
+
+    const makeReq = () =>
+      worker.fetch(
+        new Request('https://hexyr.com/api/tools/format', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'cf-connecting-ip': '203.0.113.10',
+          },
+          body: JSON.stringify({ input: '{"a":1}', kind: 'json', mode: 'validate' }),
+        }),
+        limitedEnv as never,
+        {} as never,
+      );
+
+    const first = await makeReq();
+    const second = await makeReq();
+    const third = await makeReq();
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(third.status).toBe(429);
+    expect(third.headers.get('retry-after')).toBeTruthy();
+  });
 });
