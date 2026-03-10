@@ -1,4 +1,4 @@
-import { bytesToHex, textToBytes } from '../encoding';
+import { bytesToHex, textToBytes, toArrayBuffer } from '../encoding';
 
 export type HmacAlgorithm = 'SHA-256' | 'SHA-384' | 'SHA-512';
 
@@ -17,12 +17,12 @@ export async function hmacSign(
 ): Promise<{ hex: string; base64: string }> {
   const imported = await crypto.subtle.importKey(
     'raw',
-    textToBytes(key),
+    toArrayBuffer(textToBytes(key)),
     { name: 'HMAC', hash: algorithm },
     false,
     ['sign'],
   );
-  const signature = new Uint8Array(await crypto.subtle.sign('HMAC', imported, textToBytes(message)));
+  const signature = new Uint8Array(await crypto.subtle.sign('HMAC', imported, toArrayBuffer(textToBytes(message))));
   return {
     hex: bytesToHex(signature),
     base64: toBase64(signature),
@@ -30,13 +30,13 @@ export async function hmacSign(
 }
 
 async function sha256Hex(input: string): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', textToBytes(input)));
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', toArrayBuffer(textToBytes(input))));
   return bytesToHex(digest);
 }
 
 async function hmacSha256Raw(key: Uint8Array, message: string): Promise<Uint8Array> {
-  const imported = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const signature = await crypto.subtle.sign('HMAC', imported, textToBytes(message));
+  const imported = await crypto.subtle.importKey('raw', toArrayBuffer(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const signature = await crypto.subtle.sign('HMAC', imported, toArrayBuffer(textToBytes(message)));
   return new Uint8Array(signature);
 }
 

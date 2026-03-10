@@ -22,10 +22,15 @@ const DEFAULT_ZONES = [
   'America/New_York',
   'Europe/London',
   'Asia/Tokyo',
-  'IST',
-  'Ukraine',
-  'New Zealand',
-  'CET',
+  'Asia/Kolkata',
+  'Europe/Kyiv',
+  'Pacific/Auckland',
+  'Europe/Berlin',
+  'Asia/Dubai',
+  'Australia/Sydney',
+  'Asia/Hong_Kong',
+  'America/Chicago',
+  'Asia/Seoul',
 ];
 
 const TIMEZONE_ALIASES: Record<string, string> = {
@@ -37,6 +42,14 @@ const TIMEZONE_ALIASES: Record<string, string> = {
   'NEW ZEALAND': 'Pacific/Auckland',
   NZ: 'Pacific/Auckland',
   NZST: 'Pacific/Auckland',
+  SYDNEY: 'Australia/Sydney',
+  'HONG KONG': 'Asia/Hong_Kong',
+  HONGKONG: 'Asia/Hong_Kong',
+  HKT: 'Asia/Hong_Kong',
+  'US CENTRAL': 'America/Chicago',
+  CST: 'America/Chicago',
+  SEOUL: 'Asia/Seoul',
+  KST: 'Asia/Seoul',
 };
 
 function resolveTimezone(zone: string): string {
@@ -120,7 +133,7 @@ function parseInputToEpoch(input: string, sourceZone?: string): number {
   return parsed;
 }
 
-function formatZone(epochMs: number, zone: string, label?: string): TimezoneConversion {
+function formatZone(epochMs: number, zone: string): TimezoneConversion {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: zone,
     year: 'numeric',
@@ -137,7 +150,7 @@ function formatZone(epochMs: number, zone: string, label?: string): TimezoneConv
   const map: Record<string, string> = {};
   for (const p of parts) map[p.type] = p.value;
   return {
-    zone: label ?? zone,
+    zone,
     iso: new Date(epochMs).toISOString(),
     date: `${map.year}-${map.month}-${map.day}`,
     time: `${map.hour}:${map.minute}:${map.second}`,
@@ -152,7 +165,7 @@ export function convertTimestamp(input: string, zones = DEFAULT_ZONES, sourceZon
   const resolvedZones = zones.map((zone) => {
     const resolved = resolveTimezone(zone);
     assertValidTimezone(resolved);
-    return { label: zone, resolved };
+    return resolved;
   });
   return {
     sourceIso: date.toISOString(),
@@ -160,7 +173,7 @@ export function convertTimestamp(input: string, zones = DEFAULT_ZONES, sourceZon
     unixMilliseconds: epochMs,
     rfc2822: date.toUTCString(),
     rfc3339: date.toISOString(),
-    zones: resolvedZones.map((zone) => formatZone(epochMs, zone.resolved, zone.label)),
+    zones: resolvedZones.map((zone) => formatZone(epochMs, zone)),
   };
 }
 

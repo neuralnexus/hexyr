@@ -10,14 +10,24 @@ describe('timezone lab', () => {
 
   it('supports timezone aliases like IST, CET, Ukraine, and New Zealand', () => {
     const result = convertTimestamp('1704067200', ['IST', 'CET', 'Ukraine', 'New Zealand']);
-    expect(result.zones.map((z) => z.zone)).toEqual(['IST', 'CET', 'Ukraine', 'New Zealand']);
+    expect(result.zones.map((z) => z.zone)).toEqual([
+      'Asia/Kolkata',
+      'Europe/Berlin',
+      'Europe/Kyiv',
+      'Pacific/Auckland',
+    ]);
   });
 
   it('includes requested presets in popular timezone defaults', () => {
     const zones = getPopularTimezones();
-    expect(zones).toContain('IST');
-    expect(zones).toContain('CET');
-    expect(zones).toContain('Ukraine');
-    expect(zones).toContain('New Zealand');
+    expect(zones).toContain('Asia/Kolkata');
+    expect(zones).toContain('Europe/Berlin');
+    expect(zones).toContain('Europe/Kyiv');
+    expect(zones).toContain('Pacific/Auckland');
+    expect(zones).toContain('Asia/Dubai');
+    expect(zones).toContain('Australia/Sydney');
+    expect(zones).toContain('Asia/Hong_Kong');
+    expect(zones).toContain('America/Chicago');
+    expect(zones).toContain('Asia/Seoul');
   });
 });

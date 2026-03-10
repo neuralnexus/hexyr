@@ -28,7 +28,8 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
       (tool) =>
         tool.label.toLowerCase().includes(needle) ||
         tool.key.toLowerCase().includes(needle) ||
-        tool.group.toLowerCase().includes(needle),
+        tool.group.toLowerCase().includes(needle) ||
+        (tool.aliases ?? []).some((alias) => alias.toLowerCase().includes(needle)),
     );
   }, [query]);
 

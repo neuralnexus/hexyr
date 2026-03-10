@@ -1,4 +1,4 @@
-import { base64ToBytes, bytesToHex } from '../encoding';
+import { base64ToBytes, bytesToHex, toArrayBuffer } from '../encoding';
 
 export interface CertificateInfo {
   subjectCommonName: string | null;
@@ -152,7 +152,7 @@ function findSubjectAltNames(der: Uint8Array): { dns: string[]; ip: string[]; em
 }
 
 async function digestHex(der: Uint8Array, algorithm: 'SHA-256' | 'SHA-1'): Promise<string> {
-  const digest = await crypto.subtle.digest(algorithm, der);
+  const digest = await crypto.subtle.digest(algorithm, toArrayBuffer(der));
   return bytesToHex(new Uint8Array(digest));
 }
 

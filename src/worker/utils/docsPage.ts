@@ -216,15 +216,15 @@ export const DOCS_PAGE_HTML = `<!doctype html>
             </p>
             <ul>
               <li><code>/api/tools/time-convert</code> accepts Unix, ISO8601, or wall-time input plus timezone lists.</li>
-              <li>Timezone aliases are supported for common labels like <code>IST</code>, <code>CET</code>, <code>Ukraine</code>, and <code>New Zealand</code>.</li>
+              <li>Timezone aliases are accepted, but output is normalized to IANA names like <code>Asia/Kolkata</code> and <code>America/New_York</code>.</li>
               <li><code>/api/tools/format</code> supports <code>mode: format|minify|validate</code> and structured conversion via <code>from</code>/<code>to</code>.</li>
               <li>Structured conversion currently supports <code>json</code>, <code>yaml</code>, and <code>toml</code>.</li>
             </ul>
             <p><code>POST /api/tools/time-convert</code> example body:</p>
             <pre><code>{
   "input": "2026-03-10T10:30:00",
-  "sourceZone": "IST",
-  "zones": ["UTC", "CET", "Ukraine", "New Zealand"]
+  "sourceZone": "Asia/Kolkata",
+  "zones": ["UTC", "Europe/Berlin", "Europe/Kyiv", "Pacific/Auckland", "Asia/Dubai"]
 }</code></pre>
             <p><code>POST /api/tools/format</code> conversion example body:</p>
             <pre><code>{

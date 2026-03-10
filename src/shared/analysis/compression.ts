@@ -1,4 +1,4 @@
-import { base64ToBytes, bytesToBase64, bytesToText, textToBytes } from '../encoding';
+import { base64ToBytes, bytesToBase64, bytesToText, textToBytes, toArrayBuffer } from '../encoding';
 
 export type CompressionFormat = 'gzip' | 'deflate' | 'brotli';
 export type RuntimeCompressionFormat = 'gzip' | 'deflate';
@@ -8,7 +8,7 @@ async function runStream(
   stream: CompressionStream | DecompressionStream,
 ): Promise<Uint8Array> {
   const writer = stream.writable.getWriter();
-  await writer.write(input);
+  await writer.write(toArrayBuffer(input));
   await writer.close();
   const response = new Response(stream.readable);
   const arr = await response.arrayBuffer();

@@ -1,4 +1,4 @@
-import { bytesToHex, textToBytes } from '../encoding';
+import { bytesToHex, textToBytes, toArrayBuffer } from '../encoding';
 
 export type WebhookProvider = 'stripe' | 'github' | 'slack';
 
@@ -27,8 +27,8 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 async function hmacHex(message: string, secret: string, hash: 'SHA-1' | 'SHA-256'): Promise<string> {
-  const key = await crypto.subtle.importKey('raw', textToBytes(secret), { name: 'HMAC', hash }, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, textToBytes(message));
+  const key = await crypto.subtle.importKey('raw', toArrayBuffer(textToBytes(secret)), { name: 'HMAC', hash }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, toArrayBuffer(textToBytes(message)));
   return bytesToHex(new Uint8Array(sig));
 }
 

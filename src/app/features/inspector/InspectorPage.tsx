@@ -18,15 +18,34 @@ const ROUTE_FOR_FORMAT: Record<string, string> = {
   binary: '/tool/binary',
   jwt: '/tool/jwt',
   urlencoded: '/tool/url',
-  json: '/tool/hex',
+  json: '/tool/format',
   text: '/tool/hex',
 };
+
+function shouldSuggestFormatter(input: string): boolean {
+  const trimmed = input.trim();
+  if (!trimmed) return false;
+  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    return true;
+  }
+  if (trimmed.startsWith('<') && trimmed.includes('>')) {
+    return true;
+  }
+  if (/^\s*[A-Za-z0-9_.-]+\s*:\s*.+/m.test(trimmed)) {
+    return true;
+  }
+  if (/^\s*[A-Za-z0-9_.-]+\s*=\s*.+/m.test(trimmed)) {
+    return true;
+  }
+  return false;
+}
 
 export function InspectorPage() {
   const { input, setInput } = useWorkspace();
   const navigate = useNavigate();
 
   const candidates = useMemo(() => detectFormats(input), [input]);
+  const formatterShortcut = useMemo(() => shouldSuggestFormatter(input), [input]);
   const bytes = useMemo(() => bytesFromBestEffort(input), [input]);
   const entropy = useMemo(() => estimateEntropy(bytes), [bytes]);
   const magic = useMemo(() => detectMagicBytes(bytes), [bytes]);
@@ -38,6 +57,15 @@ export function InspectorPage() {
         <p className="text-sm text-slate-400">
           Paste or drop unknown payloads and Hexyr suggests how to decode, inspect, and validate.
         </p>
+        {formatterShortcut && (
+          <button
+            type="button"
+            className="focus-ring mt-2 rounded border border-cyan-400/40 bg-cyan-500/10 px-3 py-1.5 text-xs text-cyan-200"
+            onClick={() => navigate('/tool/format')}
+          >
+            Open in Formatter Lab
+          </button>
+        )}
       </header>
 
       <div

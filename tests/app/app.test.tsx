@@ -20,6 +20,14 @@ describe('App shell', () => {
     expect(screen.getAllByRole('dialog', { name: 'Command palette' })[0]).toBeTruthy();
   });
 
+  it('finds Formatter Lab by format keywords', () => {
+    render(<App />);
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
+    const input = screen.getByPlaceholderText('Search tools (hex, jwt, hash, inspector)');
+    fireEvent.change(input, { target: { value: 'json' } });
+    expect(screen.getAllByText('Formatter Lab').length).toBeGreaterThan(0);
+  });
+
   it('toggles light theme class from theme button', () => {
     render(<App />);
     const button = screen.getAllByLabelText('Toggle color mode')[0];

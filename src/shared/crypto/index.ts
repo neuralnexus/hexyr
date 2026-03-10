@@ -1,4 +1,4 @@
-import { bytesToHex, textToBytes } from '../encoding';
+import { bytesToHex, textToBytes, toArrayBuffer } from '../encoding';
 import { md5Hex } from './md5';
 
 export type HashAlgorithm = 'MD5' | 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
@@ -8,7 +8,7 @@ export async function hashText(input: string, algorithm: HashAlgorithm): Promise
     return md5Hex(input);
   }
   const data = textToBytes(input);
-  const digest = await crypto.subtle.digest(algorithm, data);
+  const digest = await crypto.subtle.digest(algorithm, toArrayBuffer(data));
   return bytesToHex(new Uint8Array(digest));
 }
 
@@ -19,7 +19,7 @@ export async function hmacText(
 ): Promise<string> {
   const imported = await crypto.subtle.importKey(
     'raw',
-    textToBytes(key),
+    toArrayBuffer(textToBytes(key)),
     {
       name: 'HMAC',
       hash: algorithm,
@@ -27,7 +27,7 @@ export async function hmacText(
     false,
     ['sign'],
   );
-  const signature = await crypto.subtle.sign('HMAC', imported, textToBytes(message));
+  const signature = await crypto.subtle.sign('HMAC', imported, toArrayBuffer(textToBytes(message)));
   return bytesToHex(new Uint8Array(signature));
 }
 

@@ -8,6 +8,12 @@ export function textToBytes(input: string): Uint8Array {
   return encoder.encode(input);
 }
 
+export function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const out = new Uint8Array(bytes.byteLength);
+  out.set(bytes);
+  return out.buffer;
+}
+
 export function bytesToText(bytes: Uint8Array): string {
   return decoder.decode(bytes);
 }

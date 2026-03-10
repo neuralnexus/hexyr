@@ -3,6 +3,7 @@ export interface ToolDef {
   route: string;
   key: string;
   group: 'Core' | 'Inspect' | 'Crypto' | 'Utilities';
+  aliases?: string[];
 }
 
 export const TOOL_DEFS: ToolDef[] = [
@@ -26,7 +27,13 @@ export const TOOL_DEFS: ToolDef[] = [
   { key: 'url', label: 'URL', route: '/tool/url', group: 'Core' },
   { key: 'compress', label: 'Compression', route: '/tool/compress', group: 'Core' },
   { key: 'batch', label: 'Batch Transform', route: '/tool/batch', group: 'Core' },
-  { key: 'format', label: 'Formatter Lab', route: '/tool/format', group: 'Core' },
+  {
+    key: 'format',
+    label: 'Formatter Lab',
+    route: '/tool/format',
+    group: 'Core',
+    aliases: ['json', 'yaml', 'toml', 'xml', 'ini', 'env', 'sql', 'http', 'formatter', 'prettier'],
+  },
   { key: 'timezone', label: 'Timezone Lab', route: '/tool/timezone', group: 'Core' },
   { key: 'html', label: 'HTML Entities', route: '/tool/html', group: 'Core' },
   { key: 'unicode', label: 'Unicode', route: '/tool/unicode', group: 'Core' },
