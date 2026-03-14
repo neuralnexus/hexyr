@@ -18,8 +18,31 @@ export function bytesToText(bytes: Uint8Array): string {
   return decoder.decode(bytes);
 }
 
+export function isReadableText(value: string): boolean {
+  if (value.includes('\uFFFD')) {
+    return false;
+  }
+
+  for (const char of value) {
+    const code = char.charCodeAt(0);
+    if (
+      (code >= 0 && code <= 8) ||
+      (code >= 11 && code <= 12) ||
+      (code >= 14 && code <= 31) ||
+      code === 127
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export function normalizeHexInput(input: string): string {
-  return input.replace(/0x/gi, '').replace(/[^0-9a-fA-F]/g, '').trim();
+  return input
+    .replace(/0x/gi, '')
+    .replace(/[^0-9a-fA-F]/g, '')
+    .trim();
 }
 
 export function isValidHex(input: string): boolean {
@@ -64,6 +87,11 @@ export function binaryToBytes(input: string): Uint8Array {
     out[i / 8] = Number.parseInt(cleaned.slice(i, i + 8), 2);
   }
   return out;
+}
+
+export function isValidBinary(input: string): boolean {
+  const cleaned = input.replace(/\s+/g, '').trim();
+  return cleaned.length > 0 && cleaned.length % 8 === 0 && BINARY_CHUNKS.test(cleaned);
 }
 
 function toBase64(bytes: Uint8Array): string {
@@ -158,7 +186,9 @@ export function inspectUnicode(input: string): {
   );
 
   return {
-    codePoints: Array.from(input).map((char) => `U+${char.codePointAt(0)?.toString(16).toUpperCase()}`),
+    codePoints: Array.from(input).map(
+      (char) => `U+${char.codePointAt(0)?.toString(16).toUpperCase()}`,
+    ),
     utf8Bytes: Array.from(utf8, (byte) => byte.toString(16).toUpperCase().padStart(2, '0')),
     utf16Units,
   };
