@@ -1,46 +1,34 @@
 import { ToolWorkspace } from '../../components/ToolWorkspace';
-import { binaryToBytes, bytesToBinary, bytesToText, textToBytes } from '../../../shared/encoding';
+import {
+  binaryToBytes,
+  bytesToBinary,
+  bytesToText,
+  isReadableText,
+  isValidBinary,
+  textToBytes,
+} from '../../../shared/encoding';
 
-function isReadableText(value: string): boolean {
-  if (value.includes('\uFFFD')) {
-    return false;
+function tryDecodeBinary(input: string): Uint8Array | null {
+  if (!isValidBinary(input)) {
+    return null;
   }
 
-  for (const char of value) {
-    const code = char.charCodeAt(0);
-    if (
-      (code >= 0 && code <= 8) ||
-      (code >= 11 && code <= 12) ||
-      (code >= 14 && code <= 31) ||
-      code === 127
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function shouldDecodeBinary(input: string): boolean {
-  const compact = input.replace(/\s+/g, '');
-  if (!compact || !/^[01]+$/.test(compact) || compact.length % 8 !== 0) {
-    return false;
-  }
+  const compact = input.replace(/\s+/g, '').trim();
 
   try {
     const bytes = binaryToBytes(compact);
-    return (
-      bytesToBinary(bytes).replace(/\s+/g, '') === compact && isReadableText(bytesToText(bytes))
-    );
+    return bytesToBinary(bytes).replace(/\s+/g, '') === compact &&
+      isReadableText(bytesToText(bytes))
+      ? bytes
+      : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
 export function transformBinaryInput(input: string): string {
-  return shouldDecodeBinary(input)
-    ? bytesToText(binaryToBytes(input))
-    : bytesToBinary(textToBytes(input));
+  const decodedBytes = tryDecodeBinary(input);
+  return decodedBytes ? bytesToText(decodedBytes) : bytesToBinary(textToBytes(input));
 }
 
 export function BinaryPage() {

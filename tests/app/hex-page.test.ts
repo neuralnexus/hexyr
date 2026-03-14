@@ -10,5 +10,6 @@ describe('HexPage transform', () => {
   it('decodes valid hex when it round-trips to readable text', () => {
     expect(transformHexInput('4869')).toBe('Hi');
     expect(transformHexInput('48 65 6c 6c 6f')).toBe('Hello');
+    expect(transformHexInput('0x48,0x69')).toBe('Hi');
   });
 });

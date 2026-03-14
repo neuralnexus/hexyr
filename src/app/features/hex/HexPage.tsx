@@ -1,42 +1,33 @@
 import { ToolWorkspace } from '../../components/ToolWorkspace';
-import { bytesToText, hexToBytes, textToBytes, bytesToHex } from '../../../shared/encoding';
+import {
+  bytesToHex,
+  bytesToText,
+  hexToBytes,
+  isReadableText,
+  isValidHex,
+  normalizeHexInput,
+  textToBytes,
+} from '../../../shared/encoding';
 
-function isReadableText(value: string): boolean {
-  if (value.includes('\uFFFD')) {
-    return false;
-  }
-
-  for (const char of value) {
-    const code = char.charCodeAt(0);
-    if (
-      (code >= 0 && code <= 8) ||
-      (code >= 11 && code <= 12) ||
-      (code >= 14 && code <= 31) ||
-      code === 127
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function shouldDecodeHex(input: string): boolean {
-  const compact = input.replace(/\s+/g, '');
-  if (!compact || !/^[0-9a-fA-F]+$/.test(compact) || compact.length % 2 !== 0) {
-    return false;
+function tryDecodeHex(input: string): Uint8Array | null {
+  if (!isValidHex(input)) {
+    return null;
   }
 
   try {
-    const bytes = hexToBytes(compact);
-    return bytesToHex(bytes) === compact.toLowerCase() && isReadableText(bytesToText(bytes));
+    const bytes = hexToBytes(input);
+    const compact = normalizeHexInput(input);
+    return bytesToHex(bytes) === compact.toLowerCase() && isReadableText(bytesToText(bytes))
+      ? bytes
+      : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
 export function transformHexInput(input: string): string {
-  return shouldDecodeHex(input) ? bytesToText(hexToBytes(input)) : bytesToHex(textToBytes(input));
+  const decodedBytes = tryDecodeHex(input);
+  return decodedBytes ? bytesToText(decodedBytes) : bytesToHex(textToBytes(input));
 }
 
 export function HexPage() {
