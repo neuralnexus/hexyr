@@ -1,0 +1,7 @@
+title = "hexyr gitleaks allowlist"
+
+[[allowlists]]
+description = "Historical test fixture false positive"
+commits = ["6e2633bc6396bcad6d7c7e36ba5164c619e3bc99"]
+paths = ["""tests/analysis/redact.test.ts"""]
+regexes = ["""token=sk_ABCDEF1234567890"""]

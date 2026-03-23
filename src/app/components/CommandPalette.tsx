@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../hooks/useWorkspace';
 import { TOOL_DEFS } from '../utils/tools';
@@ -12,12 +12,6 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const { setActiveTool } = useWorkspace();
-
-  useEffect(() => {
-    if (!open) {
-      setQuery('');
-    }
-  }, [open]);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -79,7 +73,9 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
               }}
             >
               <span>{tool.label}</span>
-              <span className="text-[11px] uppercase tracking-wider text-slate-400">{tool.group}</span>
+              <span className="text-[11px] uppercase tracking-wider text-slate-400">
+                {tool.group}
+              </span>
             </button>
           ))}
           {filtered.length === 0 && (

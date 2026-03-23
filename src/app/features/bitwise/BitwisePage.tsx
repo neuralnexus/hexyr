@@ -1,5 +1,11 @@
 import { useMemo, useState } from 'react';
-import { bitwiseBinary, bitwiseNot, shiftLeft, shiftRight, swapEndianness } from '../../../shared/encoding';
+import {
+  bitwiseBinary,
+  bitwiseNot,
+  shiftLeft,
+  shiftRight,
+  swapEndianness,
+} from '../../../shared/encoding';
 import { intToIpv4, ipv4ToInt, isoToUnix, unixToIso } from '../../../shared/parsing';
 
 export function BitwisePage() {
@@ -8,8 +14,8 @@ export function BitwisePage() {
   const [shift, setShift] = useState(1);
   const [ipv4, setIpv4] = useState('192.168.1.1');
   const [ipv4Int, setIpv4Int] = useState(3232235777);
-  const [timestamp, setTimestamp] = useState(Math.floor(Date.now() / 1000));
-  const [isoInput, setIsoInput] = useState(new Date().toISOString());
+  const [timestamp, setTimestamp] = useState(() => Math.floor(Date.now() / 1000));
+  const [isoInput, setIsoInput] = useState(() => new Date().toISOString());
 
   const derived = useMemo(() => {
     return {
@@ -27,12 +33,16 @@ export function BitwisePage() {
     <section className="animate-rise space-y-3">
       <header>
         <h1 className="text-lg font-semibold text-slate-100">Bitwise and Byte Utilities</h1>
-        <p className="text-sm text-slate-400">Accepts hex or binary inputs for common byte operations.</p>
+        <p className="text-sm text-slate-400">
+          Accepts hex or binary inputs for common byte operations.
+        </p>
       </header>
 
       <div className="grid gap-3 lg:grid-cols-2">
         <label className="glass rounded-md p-3 text-sm">
-          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">Input A</span>
+          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">
+            Input A
+          </span>
           <input
             className="focus-ring w-full rounded border border-white/10 bg-surface-800 px-2 py-2 font-mono"
             value={left}
@@ -40,7 +50,9 @@ export function BitwisePage() {
           />
         </label>
         <label className="glass rounded-md p-3 text-sm">
-          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">Input B</span>
+          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">
+            Input B
+          </span>
           <input
             className="focus-ring w-full rounded border border-white/10 bg-surface-800 px-2 py-2 font-mono"
             value={right}
@@ -50,7 +62,9 @@ export function BitwisePage() {
       </div>
 
       <label className="glass block rounded-md p-3 text-sm">
-        <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">Shift Bits</span>
+        <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">
+          Shift Bits
+        </span>
         <input
           type="range"
           min={1}
@@ -69,7 +83,9 @@ export function BitwisePage() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <section className="glass rounded-md p-3">
-          <h2 className="mb-2 text-xs uppercase tracking-[0.12em] text-slate-400">IPv4 {'<->'} Integer</h2>
+          <h2 className="mb-2 text-xs uppercase tracking-[0.12em] text-slate-400">
+            IPv4 {'<->'} Integer
+          </h2>
           <div className="space-y-2 text-sm">
             <input
               className="focus-ring w-full rounded border border-white/10 bg-surface-800 px-2 py-2 font-mono"
@@ -102,7 +118,9 @@ export function BitwisePage() {
         </section>
 
         <section className="glass rounded-md p-3">
-          <h2 className="mb-2 text-xs uppercase tracking-[0.12em] text-slate-400">Unix Timestamp</h2>
+          <h2 className="mb-2 text-xs uppercase tracking-[0.12em] text-slate-400">
+            Unix Timestamp
+          </h2>
           <div className="space-y-2 text-sm">
             <input
               className="focus-ring w-full rounded border border-white/10 bg-surface-800 px-2 py-2 font-mono"

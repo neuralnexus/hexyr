@@ -26,9 +26,6 @@ export function HashPage() {
     }
     if (input) {
       void run();
-    } else {
-      setDigest('');
-      setHmac('');
     }
     return () => {
       mounted = false;
@@ -39,7 +36,9 @@ export function HashPage() {
     <section className="animate-rise space-y-3">
       <header>
         <h1 className="text-lg font-semibold text-slate-100">Hash and HMAC</h1>
-        <p className="text-sm text-slate-400">Uses Web Crypto APIs for deterministic client-side hashing.</p>
+        <p className="text-sm text-slate-400">
+          Uses Web Crypto APIs for deterministic client-side hashing.
+        </p>
       </header>
 
       <textarea
@@ -51,7 +50,9 @@ export function HashPage() {
 
       <div className="grid gap-3 md:grid-cols-2">
         <label className="glass rounded-md p-3 text-sm">
-          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">Algorithm</span>
+          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">
+            Algorithm
+          </span>
           <select
             className="focus-ring w-full rounded border border-white/10 bg-surface-800 px-2 py-2"
             value={algorithm}
@@ -65,7 +66,9 @@ export function HashPage() {
           </select>
         </label>
         <label className="glass rounded-md p-3 text-sm">
-          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">HMAC Key</span>
+          <span className="mb-1 block text-xs uppercase tracking-[0.12em] text-slate-400">
+            HMAC Key
+          </span>
           <input
             className="focus-ring w-full rounded border border-white/10 bg-surface-800 px-2 py-2 font-mono"
             value={key}
@@ -75,13 +78,15 @@ export function HashPage() {
         </label>
       </div>
 
-      <Output title="Digest" value={digest} />
+      <Output title="Digest" value={input ? digest : ''} />
       <Output
         title="HMAC"
         value={
           algorithm === 'MD5' || algorithm === 'SHA-1'
             ? 'HMAC is available for SHA-256/384/512. Select one of those algorithms.'
-            : hmac || 'Provide key to calculate HMAC'
+            : input
+              ? hmac || 'Provide key to calculate HMAC'
+              : ''
         }
       />
       <p className="text-xs text-amber-300">
