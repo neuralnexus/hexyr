@@ -17,7 +17,7 @@
     "worker:dev": "wrangler dev"
   },
   "dependencies": {
-    "fast-xml-parser": "^5.4.2",
+    "fast-xml-parser": "^5.5.8",
     "hono": "^4.12.8",
     "js-yaml": "^4.1.1",
     "lucide-react": "^0.577.0",
