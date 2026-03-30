@@ -36,8 +36,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
       sql-formatter:
-        specifier: ^15.7.2
-        version: 15.7.2
+        specifier: ^15.7.3
+        version: 15.7.3
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20260317.1
@@ -1932,8 +1932,8 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
-  sql-formatter@15.7.2:
-    resolution: {integrity: sha512-b0BGoM81KFRVSpZFwPpIPU5gng4YD8DI/taLD96NXCFRf5af3FzSE4aSwjKmxcyTmf/MfPu91j75883nRrWDBw==}
+  sql-formatter@15.7.3:
+    resolution: {integrity: sha512-5+zl9Nqg5aNjss0tb1G+StpC4dJKbjv3+g8CL/+V+00PfZop+2RKGyi53ScFl0dr+Dkx1LjmUO54Q3N7K3EtMw==}
     hasBin: true
 
   stackback@0.0.2:
@@ -3899,7 +3899,7 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  sql-formatter@15.7.2:
+  sql-formatter@15.7.3:
     dependencies:
       argparse: 2.0.1
       nearley: 2.20.1
