@@ -1,0 +1,25 @@
+# pnpm Security Best Practices Configuration
+# https://github.com/lirantal/npm-security-best-practices
+
+# Install cooldown (2 weeks = 20160 minutes)
+minimumReleaseAge: 20160
+
+# Allow instant upgrades for commonly updated types packages
+minimumReleaseAgeExclude:
+  - "@types/*"
+  - "typescript"
+
+# Trust policy - fail if trust level decreases (pnpm 10.21+)
+trustPolicy: no-downgrade
+
+# Block exotic sub-dependencies (git repos, tarballs) for transitive deps (pnpm 10.26+)
+blockExoticSubdeps: true
+
+# Build scripts policy
+strictDepBuilds: true
+
+# Allow specific packages with build scripts
+onlyBuiltDependencies:
+  - esbuild
+  - fsevents
+
