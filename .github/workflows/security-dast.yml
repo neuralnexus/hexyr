@@ -38,4 +38,4 @@ jobs:
             report_html.html
             report_md.md
             report_json.json
-          if-no-files-found: ignore
+          if-no-files-found: ignore\n
