@@ -1,39 +1,145 @@
+import { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { Asn1ViewerPage } from '../features/asn1/Asn1ViewerPage';
-import { AsciiArtPage } from '../features/ascii/AsciiArtPage';
-import { Base64Page } from '../features/base64/Base64Page';
-import { BatchTransformPage } from '../features/batch/BatchTransformPage';
-import { BinaryPage } from '../features/binary/BinaryPage';
-import { BitwisePage } from '../features/bitwise/BitwisePage';
-import { ByteInspectorPage } from '../features/bytes/ByteInspectorPage';
-import { CertInspectorPage } from '../features/cert/CertInspectorPage';
-import { CompressionPage } from '../features/compress/CompressionPage';
-import { CookieAnalyzerPage } from '../features/cookies/CookieAnalyzerPage';
-import { DnsToolkitPage } from '../features/dns/DnsToolkitPage';
-import { DiffPage } from '../features/diff/DiffPage';
-import { JsonYamlFormatterPage } from '../features/formatter/JsonYamlFormatterPage';
-import { HashPage } from '../features/hash/HashPage';
-import { HarInspectorPage } from '../features/har/HarInspectorPage';
-import { HexPage } from '../features/hex/HexPage';
-import { HexdumpPage } from '../features/hexdump/HexdumpPage';
-import { HtmlPage } from '../features/html/HtmlPage';
-import { IdUtilityPage } from '../features/ids/IdUtilityPage';
-import { InspectorPage } from '../features/inspector/InspectorPage';
-import { JwtPage } from '../features/jwt/JwtPage';
-import { PcapLitePage } from '../features/pcap/PcapLitePage';
-import { PolicyLinterPage } from '../features/policy/PolicyLinterPage';
-import { QueryPlaygroundPage } from '../features/query/QueryPlaygroundPage';
-import { RedactionPage } from '../features/redact/RedactionPage';
-import { HttpReplayPage } from '../features/replay/HttpReplayPage';
-import { RegexExtractorPage } from '../features/regex/RegexExtractorPage';
-import { SchemaValidatorPage } from '../features/schema/SchemaValidatorPage';
-import { HttpSignerPage } from '../features/signer/HttpSignerPage';
-import { TimezoneLabPage } from '../features/timezone/TimezoneLabPage';
-import { TlsVerifierPage } from '../features/tls/TlsVerifierPage';
-import { UnicodePage } from '../features/unicode/UnicodePage';
-import { UrlPage } from '../features/url/UrlPage';
-import { WebhookVerifierPage } from '../features/webhook/WebhookVerifierPage';
 import { AppLayout } from '../layouts/AppLayout';
+
+const Asn1ViewerPage = lazy(() =>
+  import('../features/asn1/Asn1ViewerPage').then((module) => ({
+    default: module.Asn1ViewerPage,
+  })),
+);
+const AsciiArtPage = lazy(() =>
+  import('../features/ascii/AsciiArtPage').then((module) => ({ default: module.AsciiArtPage })),
+);
+const Base64Page = lazy(() =>
+  import('../features/base64/Base64Page').then((module) => ({ default: module.Base64Page })),
+);
+const BatchTransformPage = lazy(() =>
+  import('../features/batch/BatchTransformPage').then((module) => ({
+    default: module.BatchTransformPage,
+  })),
+);
+const BinaryPage = lazy(() =>
+  import('../features/binary/BinaryPage').then((module) => ({ default: module.BinaryPage })),
+);
+const BitwisePage = lazy(() =>
+  import('../features/bitwise/BitwisePage').then((module) => ({ default: module.BitwisePage })),
+);
+const ByteInspectorPage = lazy(() =>
+  import('../features/bytes/ByteInspectorPage').then((module) => ({
+    default: module.ByteInspectorPage,
+  })),
+);
+const CertInspectorPage = lazy(() =>
+  import('../features/cert/CertInspectorPage').then((module) => ({
+    default: module.CertInspectorPage,
+  })),
+);
+const CompressionPage = lazy(() =>
+  import('../features/compress/CompressionPage').then((module) => ({
+    default: module.CompressionPage,
+  })),
+);
+const CookieAnalyzerPage = lazy(() =>
+  import('../features/cookies/CookieAnalyzerPage').then((module) => ({
+    default: module.CookieAnalyzerPage,
+  })),
+);
+const DnsToolkitPage = lazy(() =>
+  import('../features/dns/DnsToolkitPage').then((module) => ({ default: module.DnsToolkitPage })),
+);
+const DiffPage = lazy(() =>
+  import('../features/diff/DiffPage').then((module) => ({ default: module.DiffPage })),
+);
+const JsonYamlFormatterPage = lazy(() =>
+  import('../features/formatter/JsonYamlFormatterPage').then((module) => ({
+    default: module.JsonYamlFormatterPage,
+  })),
+);
+const HashPage = lazy(() =>
+  import('../features/hash/HashPage').then((module) => ({ default: module.HashPage })),
+);
+const HarInspectorPage = lazy(() =>
+  import('../features/har/HarInspectorPage').then((module) => ({
+    default: module.HarInspectorPage,
+  })),
+);
+const HexPage = lazy(() =>
+  import('../features/hex/HexPage').then((module) => ({ default: module.HexPage })),
+);
+const HexdumpPage = lazy(() =>
+  import('../features/hexdump/HexdumpPage').then((module) => ({ default: module.HexdumpPage })),
+);
+const HtmlPage = lazy(() =>
+  import('../features/html/HtmlPage').then((module) => ({ default: module.HtmlPage })),
+);
+const IdUtilityPage = lazy(() =>
+  import('../features/ids/IdUtilityPage').then((module) => ({ default: module.IdUtilityPage })),
+);
+const InspectorPage = lazy(() =>
+  import('../features/inspector/InspectorPage').then((module) => ({
+    default: module.InspectorPage,
+  })),
+);
+const JwtPage = lazy(() =>
+  import('../features/jwt/JwtPage').then((module) => ({ default: module.JwtPage })),
+);
+const PcapLitePage = lazy(() =>
+  import('../features/pcap/PcapLitePage').then((module) => ({ default: module.PcapLitePage })),
+);
+const PolicyLinterPage = lazy(() =>
+  import('../features/policy/PolicyLinterPage').then((module) => ({
+    default: module.PolicyLinterPage,
+  })),
+);
+const QueryPlaygroundPage = lazy(() =>
+  import('../features/query/QueryPlaygroundPage').then((module) => ({
+    default: module.QueryPlaygroundPage,
+  })),
+);
+const RedactionPage = lazy(() =>
+  import('../features/redact/RedactionPage').then((module) => ({ default: module.RedactionPage })),
+);
+const HttpReplayPage = lazy(() =>
+  import('../features/replay/HttpReplayPage').then((module) => ({
+    default: module.HttpReplayPage,
+  })),
+);
+const RegexExtractorPage = lazy(() =>
+  import('../features/regex/RegexExtractorPage').then((module) => ({
+    default: module.RegexExtractorPage,
+  })),
+);
+const SchemaValidatorPage = lazy(() =>
+  import('../features/schema/SchemaValidatorPage').then((module) => ({
+    default: module.SchemaValidatorPage,
+  })),
+);
+const HttpSignerPage = lazy(() =>
+  import('../features/signer/HttpSignerPage').then((module) => ({
+    default: module.HttpSignerPage,
+  })),
+);
+const TimezoneLabPage = lazy(() =>
+  import('../features/timezone/TimezoneLabPage').then((module) => ({
+    default: module.TimezoneLabPage,
+  })),
+);
+const TlsVerifierPage = lazy(() =>
+  import('../features/tls/TlsVerifierPage').then((module) => ({
+    default: module.TlsVerifierPage,
+  })),
+);
+const UnicodePage = lazy(() =>
+  import('../features/unicode/UnicodePage').then((module) => ({ default: module.UnicodePage })),
+);
+const UrlPage = lazy(() =>
+  import('../features/url/UrlPage').then((module) => ({ default: module.UrlPage })),
+);
+const WebhookVerifierPage = lazy(() =>
+  import('../features/webhook/WebhookVerifierPage').then((module) => ({
+    default: module.WebhookVerifierPage,
+  })),
+);
 
 export function AppRoutes() {
   return (

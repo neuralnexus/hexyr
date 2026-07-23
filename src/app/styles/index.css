@@ -3,10 +3,56 @@
 
 :root {
   color-scheme: dark;
+  --byte-00: #64748b;
+  --byte-0: oklch(75% 0.18 360);
+  --byte-1: oklch(75% 0.18 23);
+  --byte-2: oklch(75% 0.18 50);
+  --byte-3: oklch(75% 0.18 65);
+  --byte-4: oklch(75% 0.18 77);
+  --byte-5: oklch(75% 0.18 103);
+  --byte-6: oklch(75% 0.18 130);
+  --byte-7: oklch(75% 0.18 142);
+  --byte-8: oklch(75% 0.18 150);
+  --byte-9: oklch(75% 0.18 163);
+  --byte-a: oklch(75% 0.18 184);
+  --byte-b: oklch(75% 0.18 209);
+  --byte-c: oklch(75% 0.18 232);
+  --byte-d: oklch(75% 0.18 254);
+  --byte-e: oklch(75% 0.18 294);
+  --byte-f: oklch(75% 0.18 328);
+  --byte-ff: #f8fafc;
+  --byte-null: #94a3b8;
+  --byte-control: #fb7185;
+  --byte-whitespace: #bef264;
+  --byte-printable: #5eead4;
+  --byte-non-ascii: #fbbf24;
 }
 
 :root.light {
   color-scheme: light;
+  --byte-00: #64748b;
+  --byte-0: oklch(59% 0.18 360);
+  --byte-1: oklch(59% 0.18 23);
+  --byte-2: oklch(59% 0.18 50);
+  --byte-3: oklch(59% 0.18 65);
+  --byte-4: oklch(59% 0.18 77);
+  --byte-5: oklch(59% 0.18 103);
+  --byte-6: oklch(59% 0.18 130);
+  --byte-7: oklch(59% 0.18 142);
+  --byte-8: oklch(59% 0.18 150);
+  --byte-9: oklch(59% 0.18 163);
+  --byte-a: oklch(59% 0.18 184);
+  --byte-b: oklch(59% 0.18 209);
+  --byte-c: oklch(59% 0.18 232);
+  --byte-d: oklch(59% 0.18 254);
+  --byte-e: oklch(59% 0.18 294);
+  --byte-f: oklch(59% 0.18 328);
+  --byte-ff: #0f172a;
+  --byte-null: #64748b;
+  --byte-control: #be123c;
+  --byte-whitespace: #4d7c0f;
+  --byte-printable: #0f766e;
+  --byte-non-ascii: #a16207;
 }
 
 html {
@@ -19,7 +65,9 @@ body {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  transition: background-color 180ms ease, color 180ms ease;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
   background-image:
     radial-gradient(1200px circle at 10% -20%, rgba(52, 214, 255, 0.11), transparent 60%),
     radial-gradient(850px circle at 90% 10%, rgba(122, 125, 255, 0.08), transparent 55%);
@@ -73,6 +121,48 @@ body {
 
 .brand-chip {
   background: linear-gradient(135deg, rgba(52, 214, 255, 0.16), rgba(122, 125, 255, 0.1));
+}
+
+.control-select {
+  @apply rounded border border-white/10 bg-surface-800 px-2 py-1.5 text-xs text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-surface-900;
+}
+
+.icon-button {
+  @apply inline-flex size-7 items-center justify-center rounded border border-white/10 bg-surface-800 text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-surface-900 disabled:cursor-not-allowed disabled:opacity-35;
+}
+
+.byte-hex-cell,
+.byte-ascii-cell {
+  @apply inline-flex h-6 items-center justify-center rounded-sm border-0 bg-transparent p-0 leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-surface-900;
+}
+
+.byte-hex-cell {
+  width: 1.625rem;
+}
+
+.byte-ascii-cell {
+  width: 0.75rem;
+}
+
+.byte-hex-cell:hover,
+.byte-ascii-cell:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.byte-search-hit {
+  background: rgba(250, 204, 21, 0.12);
+  box-shadow: inset 0 -1px rgba(250, 204, 21, 0.5);
+}
+
+.byte-active-match {
+  background: rgba(52, 214, 255, 0.16);
+  box-shadow: inset 0 -2px rgba(52, 214, 255, 0.8);
+}
+
+.byte-selected {
+  background: rgba(122, 125, 255, 0.24);
+  outline: 1px solid rgba(165, 180, 252, 0.8);
+  outline-offset: -1px;
 }
 
 :root.light .glass {
@@ -129,6 +219,34 @@ body {
 
 :root.light .hover\:bg-white\/5:hover {
   background-color: rgba(30, 41, 59, 0.08);
+}
+
+:root.light .byte-hex-cell:hover,
+:root.light .byte-ascii-cell:hover {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+:root.light .byte-search-hit {
+  background: rgba(202, 138, 4, 0.12);
+}
+
+:root.light .byte-active-match {
+  background: rgba(8, 145, 178, 0.14);
+}
+
+:root.light .byte-selected {
+  background: rgba(79, 70, 229, 0.14);
+  outline-color: rgba(79, 70, 229, 0.7);
+}
+
+@media (forced-colors: active) {
+  .byte-search-hit {
+    text-decoration: underline;
+  }
+
+  .byte-selected {
+    outline: 2px solid Highlight;
+  }
 }
 
 @keyframes clock-second {

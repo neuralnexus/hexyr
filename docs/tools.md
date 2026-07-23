@@ -14,7 +14,16 @@ Paste unknown payloads, get format detection, warnings, entropy hints, and fast 
 
 ## Inspection tools
 
-- JWT inspector, Hexdump, Unicode explorer
+- JWT inspector and Unicode explorer
+- Hex Viewer:
+  - Open or drop local files without uploading them
+  - 18-group byte-spectrum coloring (leading nibble plus distinct `00` and `ff`)
+  - Semantic and color-free display modes
+  - Hex/text search, offset jump, paged rendering, byte statistics, and synchronized ASCII selection
+
+The byte-spectrum approach is inspired by Alice Pellerin's
+[“your hex editor should color-code bytes”](https://simonomi.dev/blog/color-code-your-bytes/).
+
 - X.509 inspector, TLS verifier, ASN.1/DER viewer
 - HAR inspector, Cookie analyzer, Schema validators
 - DNS Tools:

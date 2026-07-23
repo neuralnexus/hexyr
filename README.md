@@ -16,7 +16,7 @@ Desktop - HTTP Signer:
 - URL and HTML entity encode/decode
 - Unicode inspection (code points, UTF-8 bytes, UTF-16 units)
 - JWT inspector with decode warnings and claim highlighting
-- Hexdump formatter with offsets and ASCII preview
+- Local-file hex viewer with byte-spectrum coloring, search/jump, paging, statistics, and synchronized ASCII
 - Hash + HMAC helpers via Web Crypto
 - Bitwise operations, endianness swap, IPv4/int conversion, timestamp conversion
 - Entropy, stats, frequency hints, magic byte detection
@@ -161,8 +161,8 @@ pnpm preview
 ## Deploy to Cloudflare Workers
 
 1. Set secrets or env vars:
-    - `CLOUDFLARE_API_TOKEN`
-    - `CLOUDFLARE_ACCOUNT_ID`
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
 2. Authenticate Wrangler if needed:
 
 ```bash
