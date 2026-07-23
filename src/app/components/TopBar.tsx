@@ -1,4 +1,4 @@
-import { BookText, Github, Menu, MoonStar, Search, SunMedium } from 'lucide-react';
+import { BookText, GitFork, Menu, MoonStar, Search, SunMedium } from 'lucide-react';
 import { Brand } from './Brand';
 
 interface TopBarProps {
@@ -48,7 +48,7 @@ export function TopBar({ dark, onToggleTheme, onOpenPalette, onOpenTools }: TopB
           rel="noreferrer"
           aria-label="Open GitHub repository"
         >
-          <Github size={15} />
+          <GitFork size={15} />
         </a>
         <button
           className="focus-ring rounded-md border border-white/10 bg-surface-800 p-2"

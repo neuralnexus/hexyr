@@ -22,4 +22,5 @@ strictDepBuilds: true
 onlyBuiltDependencies:
   - esbuild
   - fsevents
-
+  - sharp
+  - workerd
