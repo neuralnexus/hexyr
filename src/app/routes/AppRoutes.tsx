@@ -99,6 +99,11 @@ const QueryPlaygroundPage = lazy(() =>
 const RedactionPage = lazy(() =>
   import('../features/redact/RedactionPage').then((module) => ({ default: module.RedactionPage })),
 );
+const RecipePipelinePage = lazy(() =>
+  import('../features/recipe/RecipePipelinePage').then((module) => ({
+    default: module.RecipePipelinePage,
+  })),
+);
 const HttpReplayPage = lazy(() =>
   import('../features/replay/HttpReplayPage').then((module) => ({
     default: module.HttpReplayPage,
@@ -165,6 +170,7 @@ export function AppRoutes() {
         <Route path="/tool/pcap" element={<PcapLitePage />} />
         <Route path="/tool/tls" element={<TlsVerifierPage />} />
         <Route path="/tool/redact" element={<RedactionPage />} />
+        <Route path="/tool/recipe" element={<RecipePipelinePage />} />
         <Route path="/tool/compress" element={<CompressionPage />} />
         <Route path="/tool/asn1" element={<Asn1ViewerPage />} />
         <Route path="/tool/replay" element={<HttpReplayPage />} />
@@ -180,6 +186,7 @@ export function AppRoutes() {
         <Route path="/tool/ids" element={<IdUtilityPage />} />
         <Route path="/tool/timezone" element={<TimezoneLabPage />} />
         <Route path="/tool/policy" element={<PolicyLinterPage />} />
+        <Route path="*" element={<Navigate to="/inspect" replace />} />
       </Route>
     </Routes>
   );

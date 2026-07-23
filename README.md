@@ -17,6 +17,10 @@ Desktop - HTTP Signer:
 - Unicode inspection (code points, UTF-8 bytes, UTF-16 units)
 - JWT inspector with decode warnings and claim highlighting
 - Local-file hex viewer with byte-spectrum coloring, search/jump, paging, statistics, and synchronized ASCII
+- Clickable binary structure maps for PNG, JPEG, GIF, ZIP, ELF, PE, and PDF files
+- Binary/payload diff with two local files, byte-level runs, change navigation, and synchronized selection
+- Reusable local recipe pipelines with presets, intermediate values, versioned import/export, and definition-only local saves
+- Installable offline app shell; API traffic and payload data are never service-worker cached
 - Hash + HMAC helpers via Web Crypto
 - Bitwise operations, endianness swap, IPv4/int conversion, timestamp conversion
 - Entropy, stats, frequency hints, magic byte detection
@@ -48,14 +52,17 @@ Desktop - HTTP Signer:
 - `tests`: Vitest unit tests for deterministic modules
 
 Core transforms run client-side by default. The Worker is intentionally lean and future-ready.
+Every specialized route is lazy-loaded, so opening Hexyr does not download every parser.
 
 ## Privacy Model
 
-- Payload transforms are client-side in MVP
+- Browser-tool payload transforms are client-side
 - No backend persistence
 - No payload-content logging
 - No Cloudflare KV
-- `localStorage` is used only for non-sensitive UI preferences (theme, last selected tool)
+- `localStorage` is used only for non-sensitive UI preferences and recipe definitions; recipe inputs and outputs are not saved
+- The service worker caches same-origin static assets only and explicitly bypasses `/api/*`
+- Calling an integration API or running an opt-in network lookup sends that request to the Worker; this is visibly separate from local browser tools
 
 ## Local-First Rationale
 
@@ -90,6 +97,8 @@ Local execution keeps interactions faster, lowers edge complexity, and reduces r
 - `/tool/hash`
 - `/tool/bitwise`
 - `/tool/hexdump`
+- `/tool/diff`
+- `/tool/recipe`
 - `/tool/dns`
 - `/tool/webhook`
 - `/tool/har`
@@ -235,14 +244,16 @@ Includes deterministic coverage for encoding, detection, parsing, entropy, magic
 - JWT decode is **not** signature verification.
 - Do not treat decoded JWT payloads as trusted unless signature and claims are validated in your own auth context.
 - Avoid pasting production secrets into third-party tools; Hexyr is built to keep this local-first.
+- Worker APIs require JSON, cap request bodies at 1 MiB, return `no-store`, use defense-in-depth security headers, and rate-limit tool calls per runtime instance.
+- Network probes reject local/private/reserved targets, credentials, nonstandard ports, unsafe schemes, and unsafe redirect destinations.
+- The in-memory Worker limiter is best-effort per isolate; production abuse controls should also be configured with Cloudflare Rate Limiting.
 
-## Roadmap Ideas
+## Optional Future Extensions
 
-- Structured compare mode for two payloads
-- Optional local-only encrypted workspace snapshots
-- Additional file signature and container format coverage
-- Advanced command palette and keyboard workflows
-- Large payload virtualization improvements
+- More deep container parsers (Mach-O, WebAssembly, SQLite, PCAPNG)
+- Multi-edit alignment for inserted/deleted binary ranges
+- Opt-in encrypted workspace snapshots with an explicit passphrase
+- Signed, shareable recipe packs that never include payload data
 
 ## License
 

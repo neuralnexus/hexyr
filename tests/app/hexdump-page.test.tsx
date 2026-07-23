@@ -33,4 +33,24 @@ describe('HexdumpPage', () => {
     expect(screen.getByText('0x1 · 1')).toBeTruthy();
     expect(screen.getByText('01000010')).toBeTruthy();
   });
+
+  it('surfaces recognized binary structure regions', () => {
+    render(
+      <WorkspaceProvider>
+        <HexdumpPage />
+      </WorkspaceProvider>,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Paste hex, text, base64, or binary'), {
+      target: {
+        value:
+          '89504e470d0a1a0a0000000d4948445200000010000000080806000000000000000000000049454e4400000000',
+      },
+    });
+
+    expect(screen.getByText('PNG image')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Select IHDR chunk' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Select IHDR chunk' }));
+    expect(screen.getAllByText('IHDR chunk').length).toBeGreaterThan(0);
+  });
 });

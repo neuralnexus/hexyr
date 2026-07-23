@@ -5,6 +5,10 @@ Hexyr exposes a compact integration API on the Worker.
 - Base URL: `https://hexyr.com`
 - OpenAPI: `https://hexyr.com/openapi.json`
 
+All POST endpoints require `Content-Type: application/json`, accept at most 1 MiB, return API
+responses with `Cache-Control: no-store`, and are subject to request limiting. API calls are remote
+operations; unlike browser-only tools, their request bodies are sent to the Worker.
+
 ## Health and Discovery
 
 ### `GET /api/health`
@@ -66,6 +70,9 @@ curl -s https://hexyr.com/api/tools/dns-tool \
 ```
 
 For probe-limited tools (like Ping/Trace/TCP checks), the response includes an explanatory note plus a local shell command suggestion.
+Targets must be fully qualified public hostnames or public IPv4 addresses. Private/reserved
+addresses, local names, credentials, unsafe schemes, custom ports, and unsafe redirect
+destinations are rejected.
 
 ### `POST /api/tools/webhook-verify`
 

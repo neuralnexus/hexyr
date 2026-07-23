@@ -24,3 +24,6 @@ pnpm run deploy
 
 - Keep Worker logic lean and deterministic.
 - No KV bindings are configured.
+- Configure Cloudflare Rate Limiting for `/api/tools/*`; the built-in limiter is per Worker isolate.
+- Keep the CSP and private-network target protections enabled when adding new API or probe routes.
+- Bump the cache name in `public/sw.js` when a service-worker caching policy changes.

@@ -40,15 +40,43 @@ app.use('*', async (c, next) => {
   const protocol = forwardedProto ?? url.protocol.replace(':', '');
   const isLocalHost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
 
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('Referrer-Policy', 'no-referrer');
+  c.header('X-Frame-Options', 'DENY');
+  c.header('Cross-Origin-Opener-Policy', 'same-origin');
+  c.header('Cross-Origin-Resource-Policy', 'same-origin');
+  c.header(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), browsing-topics=()',
+  );
+  c.header(
+    'Content-Security-Policy',
+    "default-src 'self'; base-uri 'none'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: blob:; manifest-src 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; upgrade-insecure-requests",
+  );
+
   if (!isLocalHost && protocol !== 'https') {
     return c.redirect(`https://${url.host}${url.pathname}${url.search}`, 301);
   }
 
   await next();
   c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  if (url.pathname.startsWith('/api/')) {
+    c.header('Cache-Control', 'no-store');
+  }
 });
 
 app.use('/api/tools/*', async (c, next) => {
+  if (c.req.method === 'POST') {
+    const contentType = c.req.header('content-type')?.toLowerCase() ?? '';
+    if (!contentType.startsWith('application/json')) {
+      return c.json({ ok: false, error: 'Content-Type must be application/json.' }, 415);
+    }
+    const contentLength = Number.parseInt(c.req.header('content-length') ?? '0', 10);
+    if (Number.isFinite(contentLength) && contentLength > 1024 * 1024) {
+      return c.json({ ok: false, error: 'JSON request body exceeds the 1 MiB limit.' }, 413);
+    }
+  }
+
   const max = parsePositiveInt(c.env.API_RATE_LIMIT_MAX, 120);
   const windowSeconds = parsePositiveInt(c.env.API_RATE_LIMIT_WINDOW_SECONDS, 60);
   const windowMs = windowSeconds * 1000;
@@ -78,6 +106,11 @@ app.use('/api/tools/*', async (c, next) => {
   if (rateBuckets.size > 5000) {
     for (const [bucketKey, value] of rateBuckets.entries()) {
       if (value.resetAt <= now) rateBuckets.delete(bucketKey);
+    }
+    while (rateBuckets.size > 5000) {
+      const oldest = rateBuckets.keys().next().value as string | undefined;
+      if (!oldest) break;
+      rateBuckets.delete(oldest);
     }
   }
 });

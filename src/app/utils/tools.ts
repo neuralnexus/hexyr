@@ -66,6 +66,13 @@ export const TOOL_DEFS: ToolDef[] = [
   },
   { key: 'batch', label: 'Batch Transform', route: '/tool/batch', group: 'Core' },
   {
+    key: 'recipe',
+    label: 'Recipe Pipeline',
+    route: '/tool/recipe',
+    group: 'Core',
+    aliases: ['pipeline', 'workflow', 'chain', 'recipe', 'transform'],
+  },
+  {
     key: 'format',
     label: 'Formatter Lab',
     route: '/tool/format',

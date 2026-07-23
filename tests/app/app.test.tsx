@@ -28,6 +28,16 @@ describe('App shell', () => {
     expect(screen.getAllByText('Formatter Lab').length).toBeGreaterThan(0);
   });
 
+  it('supports keyboard navigation through command results', async () => {
+    render(<App />);
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
+    const input = screen.getByPlaceholderText('Search tools (hex, jwt, hash, inspector)');
+    fireEvent.change(input, { target: { value: 'recipe' } });
+    expect(input.getAttribute('aria-activedescendant')).toBe('command-recipe');
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(await screen.findByText('Local Recipe Pipeline')).toBeTruthy();
+  });
+
   it('toggles light theme class from theme button', () => {
     render(<App />);
     const button = screen.getAllByLabelText('Toggle color mode')[0];

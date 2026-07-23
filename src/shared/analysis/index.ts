@@ -150,5 +150,7 @@ export * from './ascii';
 export * from './compression';
 export * from './diff';
 export * from './batch';
+export * from './binary-structure';
 export * from './hexdump';
 export * from './redact';
+export * from './recipes';

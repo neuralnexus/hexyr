@@ -10,6 +10,10 @@ import {
   type ByteColorMode,
   type ByteInputEncoding,
 } from '../../../shared/analysis/hexdump';
+import {
+  inspectBinaryStructure,
+  type BinaryRegion,
+} from '../../../shared/analysis/binary-structure';
 import { useWorkspace } from '../../hooks/useWorkspace';
 
 const FILE_LIMIT = 32 * 1024 * 1024;
@@ -67,6 +71,7 @@ export function HexdumpPage() {
   const [matchCursor, setMatchCursor] = useState(0);
   const [jumpInput, setJumpInput] = useState('');
   const [copied, setCopied] = useState(false);
+  const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const decoded = useMemo(() => {
@@ -103,6 +108,9 @@ export function HexdumpPage() {
     [bytes, options, pageEnd, visibleOffset],
   );
   const summary = useMemo(() => summarizeBytes(bytes), [bytes]);
+  const structure = useMemo(() => inspectBinaryStructure(bytes), [bytes]);
+  const selectedRegion =
+    structure.regions.find((region) => region.id === selectedRegionId) ?? null;
   const visibleDump = useMemo(
     () => formatHexdump(bytes, options, visibleOffset, pageEnd),
     [bytes, options, pageEnd, visibleOffset],
@@ -177,6 +185,7 @@ export function HexdumpPage() {
       setLocalFile({ bytes, name: file.name, size: file.size });
       setPageOffset(0);
       setSelectedOffset(null);
+      setSelectedRegionId(null);
       setMatchCursor(0);
     } catch {
       setSourceError('Hexyr could not read that local file.');
@@ -201,9 +210,13 @@ export function HexdumpPage() {
   };
 
   const copyVisibleDump = async () => {
-    await navigator.clipboard.writeText(visibleDump);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
+    try {
+      await navigator.clipboard.writeText(visibleDump);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
+      setSourceError('Clipboard access is unavailable; select and copy the visible bytes manually.');
+    }
   };
 
   const selectedByte =
@@ -255,6 +268,7 @@ export function HexdumpPage() {
                 setLocalFile(null);
                 setPageOffset(0);
                 setSelectedOffset(null);
+                setSelectedRegionId(null);
                 setMatchCursor(0);
               }}
             >
@@ -272,6 +286,7 @@ export function HexdumpPage() {
                 setSourceError('');
                 setPageOffset(0);
                 setSelectedOffset(null);
+                setSelectedRegionId(null);
                 setMatchCursor(0);
               }}
               placeholder="Paste hex, text, base64, or binary"
@@ -316,6 +331,17 @@ export function HexdumpPage() {
         />
       </div>
 
+      {structure.format !== 'unknown' && (
+        <BinaryStructureMap
+          structure={structure}
+          selectedRegion={selectedRegion}
+          onSelect={(region) => {
+            setSelectedRegionId(region.id);
+            focusOffset(region.offset);
+          }}
+        />
+      )}
+
       <div className="glass flex flex-wrap items-center gap-2 rounded-md p-2 text-xs">
         {!localFile && (
           <Control label="Read as">
@@ -326,6 +352,7 @@ export function HexdumpPage() {
                 setInputEncoding(event.target.value as ByteInputEncoding);
                 setPageOffset(0);
                 setSelectedOffset(null);
+                setSelectedRegionId(null);
                 setMatchCursor(0);
               }}
             >
@@ -545,7 +572,15 @@ export function HexdumpPage() {
                   activeMatch={activeMatch}
                   activeMatchLength={search.needleLength}
                   selectedOffset={selectedOffset}
-                  onSelect={setSelectedOffset}
+                  selectedRegion={selectedRegion}
+                  onSelect={(offset) => {
+                    setSelectedOffset(offset);
+                    const region = structure.regions.find(
+                      (candidate) =>
+                        offset >= candidate.offset && offset < candidate.offset + candidate.length,
+                    );
+                    setSelectedRegionId(region?.id ?? null);
+                  }}
                 />
               ))}
             </div>
@@ -572,6 +607,7 @@ export function HexdumpPage() {
               selectedByte >= 32 && selectedByte <= 126 ? String.fromCharCode(selectedByte) : '·'
             }
           />
+          {selectedRegion && <ByteFact label="Region" value={selectedRegion.label} />}
         </div>
       )}
     </section>
@@ -586,6 +622,7 @@ function HexdumpRowView({
   activeMatch,
   activeMatchLength,
   selectedOffset,
+  selectedRegion,
   onSelect,
 }: {
   row: ReturnType<typeof buildHexdumpRows>[number];
@@ -595,11 +632,16 @@ function HexdumpRowView({
   activeMatch: number | null;
   activeMatchLength: number;
   selectedOffset: number | null;
+  selectedRegion: BinaryRegion | null;
   onSelect: (offset: number) => void;
 }) {
   const cells = Array.from({ length: bytesPerLine }, (_, index) => row.cells[index] ?? null);
   const isActiveMatch = (offset: number) =>
     activeMatch !== null && offset >= activeMatch && offset < activeMatch + activeMatchLength;
+  const isInSelectedRegion = (offset: number) =>
+    selectedRegion !== null &&
+    offset >= selectedRegion.offset &&
+    offset < selectedRegion.offset + selectedRegion.length;
 
   return (
     <div className="flex h-6 items-center" role="row">
@@ -610,7 +652,7 @@ function HexdumpRowView({
             <button
               key={cell.index}
               type="button"
-              className={`byte-hex-cell ${column > 0 && column % 4 === 0 ? 'ml-2' : ''} ${highlightedOffsets.has(cell.index) ? 'byte-search-hit' : ''} ${isActiveMatch(cell.index) ? 'byte-active-match' : ''} ${selectedOffset === cell.index ? 'byte-selected' : ''}`}
+              className={`byte-hex-cell ${column > 0 && column % 4 === 0 ? 'ml-2' : ''} ${isInSelectedRegion(cell.index) ? 'byte-structure-selected' : ''} ${highlightedOffsets.has(cell.index) ? 'byte-search-hit' : ''} ${isActiveMatch(cell.index) ? 'byte-active-match' : ''} ${selectedOffset === cell.index ? 'byte-selected' : ''}`}
               style={{ color: getByteColorToken(cell.value, colorMode) ?? undefined }}
               onClick={() => onSelect(cell.index)}
               title={`Offset 0x${cell.index.toString(16)} · ${cell.value}`}
@@ -634,7 +676,7 @@ function HexdumpRowView({
             <button
               key={cell.index}
               type="button"
-              className={`byte-ascii-cell ${highlightedOffsets.has(cell.index) ? 'byte-search-hit' : ''} ${isActiveMatch(cell.index) ? 'byte-active-match' : ''} ${selectedOffset === cell.index ? 'byte-selected' : ''}`}
+              className={`byte-ascii-cell ${isInSelectedRegion(cell.index) ? 'byte-structure-selected' : ''} ${highlightedOffsets.has(cell.index) ? 'byte-search-hit' : ''} ${isActiveMatch(cell.index) ? 'byte-active-match' : ''} ${selectedOffset === cell.index ? 'byte-selected' : ''}`}
               style={{ color: getByteColorToken(cell.value, colorMode) ?? undefined }}
               onClick={() => onSelect(cell.index)}
               tabIndex={-1}
@@ -650,6 +692,85 @@ function HexdumpRowView({
         )}
       </div>
     </div>
+  );
+}
+
+function BinaryStructureMap({
+  structure,
+  selectedRegion,
+  onSelect,
+}: {
+  structure: ReturnType<typeof inspectBinaryStructure>;
+  selectedRegion: BinaryRegion | null;
+  onSelect: (region: BinaryRegion) => void;
+}) {
+  return (
+    <section className="glass rounded-md p-3" aria-label="Detected binary structure">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-slate-100">{structure.label}</h2>
+            <span className="rounded border border-cyan-400/30 bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[10px] uppercase text-cyan-200">
+              {structure.format}
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-slate-400">{structure.summary}</p>
+        </div>
+        <span className="text-[11px] text-slate-500">
+          {structure.regions.length} mapped region{structure.regions.length === 1 ? '' : 's'}
+          {structure.truncated ? ' · list capped' : ''}
+        </span>
+      </div>
+
+      <div className="mt-3 flex min-h-8 w-full overflow-hidden rounded border border-white/10 bg-surface-950/50">
+        {structure.regions.map((region) => (
+          <button
+            key={region.id}
+            type="button"
+            className={`binary-map-segment binary-map-${region.kind} focus-ring min-w-1 ${selectedRegion?.id === region.id ? 'binary-map-active' : ''}`}
+            style={{
+              flexGrow: Math.max(1, region.length),
+              flexBasis: 0,
+            }}
+            onClick={() => onSelect(region)}
+            title={`${region.label} · 0x${region.offset.toString(16)}–0x${Math.max(region.offset, region.offset + region.length - 1).toString(16)}`}
+            aria-label={`Select ${region.label}`}
+          />
+        ))}
+      </div>
+
+      <div className="mt-2 grid max-h-40 gap-1 overflow-auto sm:grid-cols-2 xl:grid-cols-3">
+        {structure.regions.map((region) => (
+          <button
+            key={region.id}
+            type="button"
+            className={`focus-ring flex min-w-0 items-center gap-2 rounded border px-2 py-1.5 text-left text-xs ${
+              selectedRegion?.id === region.id
+                ? 'border-cyan-400/50 bg-cyan-500/10'
+                : 'border-white/10 bg-surface-900/30 hover:bg-white/5'
+            }`}
+            onClick={() => onSelect(region)}
+          >
+            <span className={`binary-map-dot binary-map-${region.kind}`} aria-hidden="true" />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-slate-200">{region.label}</span>
+              <span className="block truncate text-[10px] text-slate-500">{region.detail}</span>
+            </span>
+            <span className="shrink-0 font-mono text-[10px] text-slate-500">
+              0x{region.offset.toString(16)}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {structure.warnings.length > 0 && (
+        <ul className="mt-2 list-disc space-y-0.5 pl-4 text-[11px] text-amber-300">
+          {structure.warnings.slice(0, 5).map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

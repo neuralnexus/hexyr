@@ -1,6 +1,6 @@
 {
   "name": "hexyr",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm exec wrangler deploy --dry-run --outdir .wrangler/dry-run",
     "deploy": "pnpm build && pnpm exec wrangler deploy --domain hexyr.com --domain docs.hexyr.com",
     "worker:dev": "wrangler dev"
   },

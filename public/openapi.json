@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Hexyr Integration API",
-    "version": "0.1.0",
-    "description": "Thin JSON API for Hexyr health, metadata, and tool integrations."
+    "version": "1.0.0",
+    "description": "Thin JSON API for Hexyr health, metadata, and explicitly remote tool integrations. POST bodies are limited to 1 MiB and are never cached."
   },
   "servers": [
     {
@@ -69,6 +69,49 @@
         "responses": {
           "200": {
             "description": "DNS parse result"
+          }
+        }
+      }
+    },
+    "/api/tools/dns-tool": {
+      "post": {
+        "summary": "Run an opt-in DNS, RDAP, or public-network diagnostic",
+        "description": "Targets must be fully qualified public hostnames or public IPv4 addresses. Local/private/reserved targets and unsafe redirects are rejected.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tool": {
+                    "type": "string"
+                  },
+                  "target": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "required": ["tool", "target"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Diagnostic result"
+          },
+          "400": {
+            "description": "Invalid tool or unsafe target"
+          },
+          "413": {
+            "description": "Request body exceeds 1 MiB"
+          },
+          "415": {
+            "description": "Content-Type is not application/json"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
           }
         }
       }
