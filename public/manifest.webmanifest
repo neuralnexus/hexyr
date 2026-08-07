@@ -1,0 +1,40 @@
+{
+  "name": "Hexyr — Human Developer Toolkit",
+  "short_name": "Hexyr",
+  "description": "A local-first toolkit for inspecting, decoding, comparing, and transforming developer payloads.",
+  "id": "/",
+  "start_url": "/inspect",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07090d",
+  "theme_color": "#07090d",
+  "categories": ["developer", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/hexyr-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Universal Inspector",
+      "short_name": "Inspect",
+      "url": "/inspect",
+      "icons": [{ "src": "/icons/hexyr-mark.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Hex Viewer",
+      "short_name": "Hex Viewer",
+      "url": "/tool/hexdump",
+      "icons": [{ "src": "/icons/hexyr-mark.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Recipe Pipeline",
+      "short_name": "Recipes",
+      "url": "/tool/recipe",
+      "icons": [{ "src": "/icons/hexyr-mark.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}

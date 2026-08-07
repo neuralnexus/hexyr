@@ -148,8 +148,13 @@
 - Deployment risk: explicit Wrangler asset + route config and CI verification.
 
 ## Definition of Done
-- App runs locally and builds cleanly.
-- Cloudflare Worker serves SPA with `/api/*` routes and SPA fallback.
-- Universal Inspector + all MVP tools function.
-- Tests pass, CI passes, deploy workflow ready.
-- README and security/privacy notes complete.
+- [x] App runs locally and builds cleanly.
+- [x] Cloudflare Worker serves SPA with `/api/*` routes and SPA fallback.
+- [x] Universal Inspector and specialized tool suite function.
+- [x] Heavy routes are lazy-loaded and large byte views are paged.
+- [x] Local file hex viewer includes accessible byte color, search, statistics, and structure maps.
+- [x] Binary diff supports synchronized local-file comparison.
+- [x] Reusable recipe pipelines expose deterministic intermediate results without persisting payloads.
+- [x] Installable offline shell bypasses all API traffic.
+- [x] Network diagnostics validate targets and redirects; APIs enforce size/type/rate safeguards.
+- [x] Tests, CI, SAST/DAST workflows, OpenAPI, and privacy/security docs are present.

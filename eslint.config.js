@@ -32,5 +32,11 @@ export default tseslint.config(
       globals: globals.serviceworker,
     },
   },
+  {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: globals.serviceworker,
+    },
+  },
   prettier,
 );

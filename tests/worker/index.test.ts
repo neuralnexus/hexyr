@@ -18,6 +18,9 @@ describe('worker routes', () => {
     const body = (await res.json()) as { ok: boolean };
     expect(res.status).toBe(200);
     expect(body.ok).toBe(true);
+    expect(res.headers.get('content-security-policy')).toContain("default-src 'self'");
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
   });
 
   it('redirects http traffic to https', async () => {
@@ -123,5 +126,59 @@ describe('worker routes', () => {
       {} as never,
     );
     expect(res.status).toBe(400);
+  });
+
+  it('blocks private network probe targets before any outbound request', async () => {
+    const res = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/dns-tool', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ tool: 'HTTPS Lookup', target: '169.254.169.254' }),
+      }),
+      env as never,
+      {} as never,
+    );
+    const body = (await res.json()) as { error: string };
+    expect(res.status).toBe(400);
+    expect(body.error).toMatch(/private|reserved/i);
+  });
+
+  it('requires JSON and rejects oversized request bodies early', async () => {
+    const wrongType = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/format', {
+        method: 'POST',
+        headers: { 'content-type': 'text/plain' },
+        body: '{}',
+      }),
+      env as never,
+      {} as never,
+    );
+    expect(wrongType.status).toBe(415);
+
+    const tooLarge = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/format', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'content-length': '1048577' },
+        body: '{}',
+      }),
+      env as never,
+      {} as never,
+    );
+    expect(tooLarge.status).toBe(413);
+  });
+
+  it('returns a safe client error for malformed JSON', async () => {
+    const res = await worker.fetch(
+      new Request('https://hexyr.com/api/tools/format', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{',
+      }),
+      env as never,
+      {} as never,
+    );
+    const body = (await res.json()) as { error: string };
+    expect(res.status).toBe(400);
+    expect(body.error).toMatch(/valid json/i);
   });
 });

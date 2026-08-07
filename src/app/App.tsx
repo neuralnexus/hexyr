@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { CommandPalette } from './components/CommandPalette';
 import { MobileToolsDrawer } from './components/MobileToolsDrawer';
+import { OfflineStatus } from './components/OfflineStatus';
 import { TopBar } from './components/TopBar';
 import { WorkspaceProvider } from './hooks/useWorkspace';
 import { AppRoutes } from './routes/AppRoutes';
+import { readLocalSetting, writeLocalSetting } from './utils/storage';
 
 const THEME_KEY = 'hexyr:theme';
 
 export default function App() {
-  const [dark, setDark] = useState(() => localStorage.getItem(THEME_KEY) !== 'light');
+  const [dark, setDark] = useState(() => readLocalSetting(THEME_KEY) !== 'light');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('light', !dark);
-    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+    writeLocalSetting(THEME_KEY, dark ? 'dark' : 'light');
   }, [dark]);
 
   useEffect(() => {
@@ -43,7 +46,9 @@ export default function App() {
             onOpenPalette={() => setPaletteOpen(true)}
             onOpenTools={() => setMobileToolsOpen(true)}
           />
-          <AppRoutes />
+          <AppErrorBoundary>
+            <AppRoutes />
+          </AppErrorBoundary>
           <footer className="glass grid grid-cols-1 gap-1 px-3 py-2 text-[11px] text-slate-400 md:grid-cols-3 md:items-center md:px-4">
             <span className="text-center md:hidden">
               <span>Data stays local</span>
@@ -83,6 +88,7 @@ export default function App() {
           </footer>
           <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
           <MobileToolsDrawer open={mobileToolsOpen} onClose={() => setMobileToolsOpen(false)} />
+          <OfflineStatus />
         </div>
       </WorkspaceProvider>
     </BrowserRouter>

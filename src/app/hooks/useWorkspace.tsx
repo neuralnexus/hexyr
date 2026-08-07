@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react';
+import { readLocalSetting, writeLocalSetting } from '../utils/storage';
 
 interface WorkspaceState {
   input: string;
@@ -16,7 +17,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [activeTool, setActiveTool] = useState(
-    localStorage.getItem('hexyr:lastTool') ?? 'inspect',
+    readLocalSetting('hexyr:lastTool') ?? 'inspect',
   );
 
   const value = useMemo(
@@ -28,7 +29,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       setOutput,
       setActiveTool: (next: string) => {
         setActiveTool(next);
-        localStorage.setItem('hexyr:lastTool', next);
+        writeLocalSetting('hexyr:lastTool', next);
       },
       clear: () => {
         setInput('');

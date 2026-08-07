@@ -1,60 +1,169 @@
-import { base64ToBytes, bytesToHex, hexToBytes, isValidHex, textToBytes } from '../encoding';
+import { base64ToBytes, bytesToHex, hexToBytes, textToBytes } from '../encoding';
 
 export type DiffEncoding = 'text' | 'hex' | 'base64';
+export type DiffStatus = 'equal' | 'changed' | 'left-only' | 'right-only';
+
+export interface DiffRun {
+  status: DiffStatus;
+  start: number;
+  end: number;
+  length: number;
+}
 
 export interface DiffResult {
   leftLength: number;
   rightLength: number;
   equalBytes: number;
+  changedBytes: number;
+  leftOnlyBytes: number;
+  rightOnlyBytes: number;
   similarity: number;
   firstDiffOffset: number;
   preview: string[];
+  runs: DiffRun[];
+  changeOffsets: number[];
+  changesTruncated: boolean;
 }
 
-function toBytes(input: string, encoding: DiffEncoding): Uint8Array {
+export interface BinaryDiffCell {
+  offset: number;
+  left: number | null;
+  right: number | null;
+  status: DiffStatus;
+}
+
+export interface BinaryDiffRow {
+  offset: number;
+  cells: BinaryDiffCell[];
+}
+
+const MAX_NAVIGABLE_CHANGES = 10_000;
+
+export function decodeDiffPayload(input: string, encoding: DiffEncoding): Uint8Array {
   if (encoding === 'text') return textToBytes(input);
-  if (encoding === 'hex') return isValidHex(input) ? hexToBytes(input) : textToBytes(input);
+  if (encoding === 'hex') {
+    if (input.trim() === '') return new Uint8Array();
+    const withoutPrefixes = input.replace(/0x/gi, '');
+    if (/[^0-9a-f\s:,_-]/i.test(withoutPrefixes)) {
+      throw new Error('Hex input must contain complete byte pairs and no non-hex characters.');
+    }
+    const cleaned = withoutPrefixes.replace(/[\s:,_-]/g, '');
+    if (!cleaned || cleaned.length % 2 !== 0) {
+      throw new Error('Hex input must contain complete byte pairs and no non-hex characters.');
+    }
+    return hexToBytes(cleaned);
+  }
   try {
     return base64ToBytes(input);
   } catch {
-    return textToBytes(input);
+    throw new Error('Base64 input is malformed.');
   }
 }
 
-export function comparePayloads(left: string, right: string, encoding: DiffEncoding): DiffResult {
-  const a = toBytes(left, encoding);
-  const b = toBytes(right, encoding);
-  const max = Math.max(a.length, b.length);
-  const min = Math.min(a.length, b.length);
-  let equal = 0;
-  let firstDiff = -1;
+export function diffStatusAt(
+  left: Uint8Array,
+  right: Uint8Array,
+  offset: number,
+): DiffStatus {
+  if (offset >= left.length) return 'right-only';
+  if (offset >= right.length) return 'left-only';
+  return left[offset] === right[offset] ? 'equal' : 'changed';
+}
 
-  for (let i = 0; i < min; i += 1) {
-    if (a[i] === b[i]) equal += 1;
-    else if (firstDiff === -1) firstDiff = i;
+export function buildBinaryDiffRows(
+  left: Uint8Array,
+  right: Uint8Array,
+  start = 0,
+  end = Math.max(left.length, right.length),
+  bytesPerLine = 16,
+): BinaryDiffRow[] {
+  if (!Number.isInteger(bytesPerLine) || bytesPerLine <= 0) {
+    throw new Error('Bytes per line must be a positive integer.');
   }
+  const maxLength = Math.max(left.length, right.length);
+  const first = Math.max(0, Math.min(start, maxLength));
+  const last = Math.max(first, Math.min(end, maxLength));
+  const rows: BinaryDiffRow[] = [];
 
-  if (firstDiff === -1 && a.length !== b.length) {
-    firstDiff = min;
+  for (let offset = first; offset < last; offset += bytesPerLine) {
+    const cells: BinaryDiffCell[] = [];
+    const limit = Math.min(last, offset + bytesPerLine);
+    for (let cursor = offset; cursor < limit; cursor += 1) {
+      cells.push({
+        offset: cursor,
+        left: cursor < left.length ? left[cursor] : null,
+        right: cursor < right.length ? right[cursor] : null,
+        status: diffStatusAt(left, right, cursor),
+      });
+    }
+    rows.push({ offset, cells });
+  }
+  return rows;
+}
+
+export function compareByteArrays(left: Uint8Array, right: Uint8Array): DiffResult {
+  const max = Math.max(left.length, right.length);
+  let equalBytes = 0;
+  let changedBytes = 0;
+  let leftOnlyBytes = 0;
+  let rightOnlyBytes = 0;
+  let firstDiffOffset = -1;
+  const runs: DiffRun[] = [];
+  const changeOffsets: number[] = [];
+  let totalChanges = 0;
+
+  for (let offset = 0; offset < max; offset += 1) {
+    const status = diffStatusAt(left, right, offset);
+    if (status === 'equal') equalBytes += 1;
+    if (status === 'changed') changedBytes += 1;
+    if (status === 'left-only') leftOnlyBytes += 1;
+    if (status === 'right-only') rightOnlyBytes += 1;
+    if (status !== 'equal') {
+      totalChanges += 1;
+      if (firstDiffOffset === -1) firstDiffOffset = offset;
+      if (changeOffsets.length < MAX_NAVIGABLE_CHANGES) changeOffsets.push(offset);
+    }
+
+    const activeRun = runs.at(-1);
+    if (activeRun?.status === status) {
+      activeRun.end = offset + 1;
+      activeRun.length += 1;
+    } else {
+      runs.push({ status, start: offset, end: offset + 1, length: 1 });
+    }
   }
 
   const preview: string[] = [];
-  const start = Math.max(0, (firstDiff === -1 ? 0 : firstDiff) - 8);
-  const end = Math.min(max, start + 24);
-  for (let i = start; i < end; i += 8) {
-    const leftSlice = a.slice(i, i + 8);
-    const rightSlice = b.slice(i, i + 8);
+  const previewStart = Math.max(0, (firstDiffOffset === -1 ? 0 : firstDiffOffset) - 8);
+  const previewEnd = Math.min(max, previewStart + 32);
+  for (let offset = previewStart; offset < previewEnd; offset += 8) {
+    const leftSlice = left.slice(offset, Math.min(left.length, offset + 8));
+    const rightSlice = right.slice(offset, Math.min(right.length, offset + 8));
     preview.push(
-      `${i.toString(16).padStart(6, '0')}  L:${bytesToHex(leftSlice).padEnd(16, ' ')}  R:${bytesToHex(rightSlice).padEnd(16, ' ')}`,
+      `${offset.toString(16).padStart(8, '0')}  L:${bytesToHex(leftSlice).padEnd(16, '·')}  R:${bytesToHex(rightSlice).padEnd(16, '·')}`,
     );
   }
 
   return {
-    leftLength: a.length,
-    rightLength: b.length,
-    equalBytes: equal,
-    similarity: max === 0 ? 1 : Number((equal / max).toFixed(4)),
-    firstDiffOffset: firstDiff,
+    leftLength: left.length,
+    rightLength: right.length,
+    equalBytes,
+    changedBytes,
+    leftOnlyBytes,
+    rightOnlyBytes,
+    similarity: max === 0 ? 1 : Number((equalBytes / max).toFixed(6)),
+    firstDiffOffset,
     preview,
+    runs,
+    changeOffsets,
+    changesTruncated: totalChanges > changeOffsets.length,
   };
+}
+
+export function comparePayloads(
+  left: string,
+  right: string,
+  encoding: DiffEncoding,
+): DiffResult {
+  return compareByteArrays(decodeDiffPayload(left, encoding), decodeDiffPayload(right, encoding));
 }

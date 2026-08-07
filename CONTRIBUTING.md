@@ -19,10 +19,7 @@ pnpm dev
 Before opening a PR, run:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+pnpm check
 ```
 
 ## Branch and PR Workflow
@@ -55,7 +52,7 @@ pnpm build
 
 ## Community PR Checklist
 
-- [ ] Lint/typecheck/test/build pass locally
+- [ ] `pnpm check` passes locally, including the Worker bundle dry-run
 - [ ] New behavior covered by tests
 - [ ] README/docs updated if needed
 - [ ] No breaking API/route changes without notes

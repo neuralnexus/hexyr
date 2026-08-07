@@ -32,7 +32,17 @@
   <url><loc>https://hexyr.com/tool/pcap</loc></url>
   <url><loc>https://hexyr.com/tool/compress</loc></url>
   <url><loc>https://hexyr.com/tool/batch</loc></url>
+  <url><loc>https://hexyr.com/tool/recipe</loc></url>
+  <url><loc>https://hexyr.com/tool/format</loc></url>
+  <url><loc>https://hexyr.com/tool/ascii</loc></url>
   <url><loc>https://hexyr.com/tool/redact</loc></url>
   <url><loc>https://hexyr.com/tool/replay</loc></url>
+  <url><loc>https://hexyr.com/tool/dns</loc></url>
+  <url><loc>https://hexyr.com/tool/webhook</loc></url>
+  <url><loc>https://hexyr.com/tool/har</loc></url>
+  <url><loc>https://hexyr.com/tool/cookies</loc></url>
+  <url><loc>https://hexyr.com/tool/ids</loc></url>
+  <url><loc>https://hexyr.com/tool/timezone</loc></url>
+  <url><loc>https://hexyr.com/tool/policy</loc></url>
   <url><loc>https://docs.hexyr.com/</loc></url>
 </urlset>
